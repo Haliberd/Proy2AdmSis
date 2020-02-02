@@ -58,6 +58,7 @@ alter table estacion owner to postgres;
 
 create table dispensadores(
 	nombre text not null,
+	precio int not null,
 	cantidad_total integer not null,
 	cantidad_cargada integer not null
 );
