@@ -5,6 +5,7 @@
  */
 package empresacombustible;
 
+//import java.sql.*;
 import java.sql.ResultSet;
 
 /**
