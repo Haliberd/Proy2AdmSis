@@ -7,6 +7,8 @@ package empresacombustible;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  *
@@ -21,7 +23,7 @@ public class ConexionBD
     
     public ConexionBD()
     {
-        url = "jdbc:postgresql://localhost:5432/";
+        url = "jdbc:postgresql://localhost:5432/Prueba";
         usuario = "postgres";
         password = "1234";
 
@@ -33,5 +35,31 @@ public class ConexionBD
             e.printStackTrace();
         }
             
+    }
+    
+    public int consultaInsertar(String consultaSQL){
+        try {
+            Statement sentencia = conexion.createStatement();
+            int respuesta = sentencia.executeUpdate(consultaSQL);
+            conexion.close();
+            System.out.println(respuesta);
+            return respuesta;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    
+    public ResultSet consultaBusqueda(String consultaSQL){
+        try {
+            Statement sentencia = conexion.createStatement();
+            ResultSet resultado = sentencia.executeQuery(consultaSQL);
+            conexion.close();
+            return resultado;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
