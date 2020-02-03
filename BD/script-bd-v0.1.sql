@@ -58,12 +58,20 @@ alter table estacion owner to postgres;
 
 create table dispensadores(
 	nombre text not null,
-	precio int not null,
+	precio integer not null,
 	cantidad_total integer not null,
 	cantidad_cargada integer not null
 );
 
 alter table dispensadores owner to postgres;
+
+create table listaDeCompra(
+	nombre_dispensador text not null,
+	cantidad integer not null,
+	precio integer not null
+);
+
+alter table listaDeCompra owner to postgres;
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
