@@ -60,7 +60,7 @@ create table dispensadores(
 	nombre text not null,
 	precio integer not null,
 	cantidad_total integer not null,
-	cantidad_cargada integer not null
+	cantidad_disponible integer not null
 );
 
 alter table dispensadores owner to postgres;
@@ -72,6 +72,9 @@ create table listaDeCompra(
 );
 
 alter table listaDeCompra owner to postgres;
+
+insert into dispensadores (nombre, precio, cantidad_total, cantidad_disponible)
+values ('93', 600, 100, 100), ('97', 610, 120, 100), ('95', 605, 200, 190), ('diesel', 400, 300, 150), ('kerosene', 300, 500, 420);
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
