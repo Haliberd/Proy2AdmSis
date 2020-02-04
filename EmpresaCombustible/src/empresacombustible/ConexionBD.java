@@ -21,8 +21,16 @@ public class ConexionBD
     private String password;
     private Connection conexion;
     
+    //hacer que reciba la url password y usuario para que sirva para todas las estaciones de servicios
+    
+    //public ConexionBD(String url, String usuario, String password)
     public ConexionBD()
     {
+        /*
+        this.url = url;
+        this.usuario = usuario;
+        this.password = password;*/
+        
         url = "jdbc:postgresql://localhost:5432/Prueba";
         usuario = "postgres";
         password = "1234";
@@ -33,8 +41,7 @@ public class ConexionBD
             System.out.println("Conexión exitosa!");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-            
+        }        
     }
     
     public int consultaInsertar(String consultaSQL){
