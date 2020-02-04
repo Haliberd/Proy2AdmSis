@@ -20,6 +20,7 @@ import java.util.Scanner;
 public class Surtidor {
     public static void main(String[] args) throws IOException{
         try {
+            String tipo = inicio();
             Socket socket = new Socket("localhost", 59898);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
@@ -28,9 +29,9 @@ public class Surtidor {
                 bandera = menu();
                 if(bandera.compareTo("1") == 0){
                     Scanner scanner = new Scanner(System.in);
-                    System.out.println("Cantidad");
+                    System.out.println("Cantidad: ");
                     String cantidad = scanner.nextLine();
-                    dataoutput.writeUTF(cantidad);
+                    dataoutput.writeUTF(tipo + "-" + cantidad);
                     System.out.println(datainput.readUTF());
                 }
             }
@@ -40,6 +41,47 @@ public class Surtidor {
         
     }
     
+    //Sirve para ingresar el tipo de combustible a utilizar.
+    public static String inicio(){
+        Scanner scanner = new Scanner(System.in);
+        String bandera = "-1";
+        while (bandera.compareTo("93") != 0 && bandera.compareTo("95") != 0 && bandera.compareTo("97") != 0 
+                && bandera.compareTo("petroleo") != 0 && bandera.compareTo("kerosene") != 0 && bandera.compareTo("0") != 1){
+            System.out.println("\nBienvenido al distribuidor de combustible\n"
+                    + "Ingrese una opcion correspondiente al tipo de combustible a distribuir:\n"
+                    + "1) 93\n"
+                    + "2) 95\n"
+                    + "3) 97\n"
+                    + "4) petroleo\n"
+                    + "5) kerosene\n"
+                    + "0) Salir\n"
+                    + "Ingrese su opcion: ");
+            bandera = scanner.nextLine();
+            switch(bandera){
+                case "1":
+                    bandera = "93";
+                    break;
+                case "2":
+                    bandera = "95";
+                    break;
+                case "3":
+                    bandera = "97";
+                    break;
+                case "4":
+                    bandera = "petroleo";
+                    break;
+                case "5":
+                    bandera = "kerosene";
+                    break;
+                case "0":
+                    break;
+                default:
+                    bandera = "-1";
+                    break;
+            }
+        }
+        return bandera;
+    }
     
     //Se puede caer si se ingresa algo diferente a un numero
     public static String menu(){
