@@ -23,9 +23,14 @@ public class DistribuidorSantiago
     private Runnable TCliente;
     private Runnable TServidor;
     private int precio93, precio95, precio97, precioDiesel, precioKerosene;
+    private static ConexionBD conexion;
   
     public DistribuidorSantiago()
     {
+        String url = "jdbc:postgresql://localhost:5432/BDSantiago";
+        String usuario = "postgres";
+        String password = "1234";
+        conexion = new ConexionBD(url, usuario, password);
         this.precio93 = 900;
         this.precio95 = 901;
         this.precio97 = 902;
@@ -42,7 +47,8 @@ public class DistribuidorSantiago
     
     public static void main(String[] args)
     {
-        ConexionBD conexion = new ConexionBD();
+        //ConexionBD conexion = new ConexionBD();
+        
         /*
         String consultaSQL = "INSERT INTO public.servidor (código, nombre_s, habdescarga, velocidad) VALUES (122, 'Prueba', false, 0)";
         int respuesta = conexion.consultaInsertar(consultaSQL);
@@ -51,24 +57,26 @@ public class DistribuidorSantiago
         }
         else{
             System.out.println("Ha fracasado la inserción!");
-        }
+        }*/
+        DistribuidorSantiago DSantiago = new DistribuidorSantiago();
         
-        String consultaSQL = "SELECT * FROM SERVIDOR";
+        String consultaSQL = "SELECT * FROM surtidor";
         ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
         
         try {
             while(resultado.next()){
-                int codigo = resultado.getInt("código");
-                String nombre = resultado.getString("nombre_s");
-                boolean habdescarga = resultado.getBoolean("habdescarga");
-                int velocidad = resultado.getInt("velocidad");
-                System.out.println(codigo+" "+nombre+" "+habdescarga+" "+velocidad);
+                String nombre = resultado.getString("nombre");
+                String tipo = resultado.getString("tipo");
+                int precio = resultado.getInt("precio");
+                float litrosConsumidos = resultado.getFloat("litrosconsumidos");
+                float litrosDisponibles = resultado.getFloat("litrosdisponibles");
+                int cargas = resultado.getInt("cargasrealizadas");
+                String refEstacion = resultado.getString("refestacion");
+                System.out.println(nombre+" "+tipo+" "+precio+" "+litrosConsumidos+" "+litrosDisponibles+" "+cargas+" "+refEstacion);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
-        
-        DistribuidorSantiago DSantiago = new DistribuidorSantiago();
+        }
     }
     
     class ThreadCliente implements Runnable
@@ -124,7 +132,7 @@ public class DistribuidorSantiago
                     output = new DataOutputStream(socket.getOutputStream());
                     
                     String mensaje = input.readUTF();
-                    System.out.println(mensaje);
+                    //System.out.println(mensaje);
                     
                     // HACER UN FOR QUE VERIFIQUE SI UNA SENTENCIA X ESTABA DENTRO DEL STRING, PARA GENERAR LAS CONSULTAS DESDE LOS SURTIDORES
                     String[] msjeSplit = mensaje.split("-");
@@ -134,35 +142,35 @@ public class DistribuidorSantiago
                         int precio = Integer.parseInt(msjeSplit[2]);
                         if(msjeSplit[1].equals("93"))
                         {
-                            output.writeUTF("Cambiando el precio del combustible 93...");
+                            consultaCambioPrecio("precio93", precio);
                             output.writeUTF("El precio actual es $"+precio93);
                             precio93 = precio;
                             output.writeUTF("El nuevo precio es $"+precio93);
                         }
                         else if(msjeSplit[1].equals("95"))
                         {
-                            output.writeUTF("Cambiando el precio del combustible 95...");
+                            consultaCambioPrecio("precio95", precio);
                             output.writeUTF("El precio actual es $"+precio95);
                             precio95 = precio;
                             output.writeUTF("El nuevo precio es $"+precio95);
                         }
                         else if(msjeSplit[1].equals("97"))
                         {
-                            output.writeUTF("Cambiando el precio del combustible 97...");
+                            consultaCambioPrecio("precio97", precio);
                             output.writeUTF("El precio actual es $"+precio97);
                             precio97 = precio;
                             output.writeUTF("El nuevo precio es $"+precio97);
                         }
                         else if(msjeSplit[1].equals("Diesel"))
                         {
-                            output.writeUTF("Cambiando el precio del combustible Diesel...");
+                            consultaCambioPrecio("precioDiesel", precio);
                             output.writeUTF("El precio actual es $"+precioDiesel);
                             precioDiesel = precio;
                             output.writeUTF("El nuevo precio es $"+precioDiesel);
                         }
                         else if(msjeSplit[1].equals("Kerosene"))
                         {
-                            output.writeUTF("Cambiando el precio del combustible Kerosene...");
+                            consultaCambioPrecio("precioKerosene", precio);
                             output.writeUTF("El precio actual es $"+precioKerosene);
                             precioKerosene = precio;
                             output.writeUTF("El nuevo precio es $"+precioKerosene);
@@ -176,6 +184,20 @@ public class DistribuidorSantiago
             } catch (IOException ex) {
                 Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    public void consultaCambioPrecio(String combustible, int precio)
+    {  
+        String consultaSQL = "UPDATE EstacionDeServicio SET "+combustible+"="+precio
+                +" WHERE nombre = 'Santiago'";
+        //System.out.println(consultaSQL);
+        int respuesta = conexion.consultaCambioPrecio(consultaSQL);
+        if(respuesta > 0){
+            System.out.println("Cambio de "+combustible+" realizado con éxito!");
+        }
+        else{
+            System.out.println("Ha fracasado la inserción!");
         }
     }
 }

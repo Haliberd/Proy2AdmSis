@@ -23,17 +23,18 @@ public class ConexionBD
     
     //hacer que reciba la url password y usuario para que sirva para todas las estaciones de servicios
     
-    //public ConexionBD(String url, String usuario, String password)
-    public ConexionBD()
+    public ConexionBD(String url, String usuario, String password)
     {
-        /*
+        
         this.url = url;
         this.usuario = usuario;
-        this.password = password;*/
+        this.password = password;
         
-        url = "jdbc:postgresql://localhost:5432/Prueba";
+        
+        /*
+        url = "jdbc:postgresql://localhost:5432/BDSantiago";
         usuario = "postgres";
-        password = "1234";
+        password = "1234";*/
 
         try {
             Class.forName("org.postgresql.Driver");
@@ -48,10 +49,8 @@ public class ConexionBD
         try {
             Statement sentencia = conexion.createStatement();
             int respuesta = sentencia.executeUpdate(consultaSQL);
-            conexion.close();
             System.out.println(respuesta);
             return respuesta;
-            
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -62,11 +61,21 @@ public class ConexionBD
         try {
             Statement sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(consultaSQL);
-            conexion.close();
             return resultado;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    
+    public int consultaCambioPrecio(String consultaSQL){
+        try {
+            Statement sentencia = conexion.createStatement();
+            int respuesta = sentencia.executeUpdate(consultaSQL);
+            return respuesta;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
     }
 }

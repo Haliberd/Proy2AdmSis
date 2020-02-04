@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package empresacombustible;
+import InterfazGrafica.VistaPrincipal;
 
 //import java.sql.*;
 import java.io.DataInputStream;
@@ -20,11 +21,15 @@ import java.util.logging.Logger;
  */
 public class EmpresaCombustible {
 
+    private static VistaPrincipal vistaPrincipal;
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args)
     {
+        vistaPrincipal = new VistaPrincipal();
+        vistaPrincipal.setLocationRelativeTo(null);
+        vistaPrincipal.setVisible(true);
         //FALTA HACER EL WHILE PARA COMPROBAR SI LA OPCIÓN INGRESADA POR EL USUARIO ES VÁLIDA
         int opcion = 1;
         while(opcion != 0)
