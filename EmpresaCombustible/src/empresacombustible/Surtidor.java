@@ -34,6 +34,7 @@ public class Surtidor {
                     dataoutput.writeUTF(tipo + "-" + cantidad);
                     System.out.println(datainput.readUTF());
                 }
+                dataoutput.writeUTF("0");
             }
         }catch(Exception e){
                 

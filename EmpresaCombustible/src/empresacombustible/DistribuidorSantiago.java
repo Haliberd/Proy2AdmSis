@@ -12,6 +12,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +24,10 @@ import java.util.logging.Logger;
 public class DistribuidorSantiago 
 {
     private static String nombre = "Santiago";
-    private Runnable TCliente;
+    //private Runnable TCliente;
     private Runnable TServidor;
+    private Runnable TLocal;
+    private Runnable TRecibidor;
     private static int precio93, precio95, precio97, precioDiesel, precioKerosene;
     private static double factorUtilidad;
     private static ConexionBD conexion;
@@ -35,19 +39,25 @@ public class DistribuidorSantiago
         String password = "1234";
         conexion = new ConexionBD(url, usuario, password);
         
-        /*
+        
         this.precio93 = 900;
         this.precio95 = 901;
         this.precio97 = 902;
         this.precioDiesel = 600;
         this.precioKerosene = 300;
-        this.factorUtilidad = 0.01;*/
-        TCliente = new ThreadCliente();
+        this.factorUtilidad = 0.01;
+        //TCliente = new ThreadCliente();
         TServidor = new ThreadServidor();
+        TLocal = new ThreadLocal();
+        TRecibidor = new ThreadRecibidor();
         
-        Thread c = new Thread(TCliente);
+        Thread l = new Thread(TLocal);
+        //Thread c = new Thread(TCliente);
         Thread s = new Thread(TServidor);
-        c.start();
+        Thread t = new Thread(TRecibidor);
+        t.start();
+        l.start();
+        //c.start();
         s.start();
     }
     
@@ -105,24 +115,7 @@ public class DistribuidorSantiago
             e.printStackTrace();
         }
         
-        int opcion = 1;
-        while(opcion != 0)
-        {
-            Scanner s = new Scanner(System.in);
-            System.out.println("-MENÚ-\n" +
-                    "1)Cambiar Factor de Utilidad\n" +
-                    "0)Salir\n" +
-                    "Ingrese su opción: ");
-
-            opcion = s.nextInt();
-            if(opcion == 1)
-            {
-                s = new Scanner(System.in);
-                System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
-                double factor = s.nextDouble();
-                modificarFactorUtilidad(factor);
-            }
-        }
+        
     }
     
     public static void modificarFactorUtilidad(double factor)
@@ -138,6 +131,32 @@ public class DistribuidorSantiago
         else{
             System.out.println("Ha fracasado la modificación!");
         }
+    }
+    
+    class ThreadLocal implements Runnable{
+        
+        @Override
+        public void run() {
+            int opcion = 1;
+            while(opcion != 0)
+            {
+                Scanner s = new Scanner(System.in);
+                System.out.println("-MENÚ-\n" +
+                        "1)Cambiar Factor de Utilidad\n" +
+                        "0)Salir\n" +
+                        "Ingrese su opción: ");
+
+                opcion = s.nextInt();
+                if(opcion == 1)
+                {
+                    s = new Scanner(System.in);
+                    System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
+                    double factor = s.nextDouble();
+                    modificarFactorUtilidad(factor);
+                }
+            }
+        }
+        
     }
     
     class ThreadCliente implements Runnable
@@ -168,6 +187,61 @@ public class DistribuidorSantiago
             }
             */
         }
+    }
+    
+    class ThreadRecibidor implements Runnable{
+
+        @Override
+        public void run() {
+            
+            try (ServerSocket listener = new ServerSocket(59898)) {
+            System.out.println("El servidor de servicio esta corriendo...");
+            ExecutorService pool = Executors.newFixedThreadPool(6);
+            while (true) {
+                pool.execute(new ListenerSurtidor(listener.accept()));
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+            }
+         
+        }
+        
+    }
+    
+    class ListenerSurtidor implements Runnable{
+
+        private Socket socket;
+
+        ListenerSurtidor(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            //System.out.println("Connected: " + socket);
+            String bandera = "9";
+            try {
+                DataInputStream in = new DataInputStream(socket.getInputStream());
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                while (bandera.compareTo("0") != 0) {
+                    bandera = in.readUTF();
+                    String[] argumentos = bandera.split("-");
+                    if(argumentos.length == 2){
+                        consultaCargaCombustible(argumentos[0], argumentos[1]);
+                    }
+                    //Para continuar la conexion
+                    out.writeUTF("hi");
+                }
+            } catch (Exception e) {
+                System.out.println("Error:" + socket);
+                System.out.println(e.getMessage());
+            } finally {
+                try { socket.close();
+            } catch (IOException e) {}
+                System.out.println("Closed: " + socket);
+            }
+        }
+        
     }
     
     class ThreadServidor implements Runnable
@@ -239,13 +313,18 @@ public class DistribuidorSantiago
                     }
                     output.writeUTF("Fin");
                     socket.close();
-                    System.out.println("Se ha desconectado al cliente");
+                    System.out.println("Se ha desconectado a la empresa");
                     
                 }
             } catch (IOException ex) {
                 Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    public void consultaCargaCombustible(String tipo, String cantidad){
+        String consultaSQL = "SELECT litros_disponibles( " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
+        conexion.consultaFuncion(consultaSQL);
     }
     
     public void consultaCambioPrecio(String combustible, int precio)

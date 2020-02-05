@@ -8,7 +8,10 @@ package empresacombustible;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -68,5 +71,15 @@ public class ConexionBD
             e.printStackTrace();
             return 0;
         }
+    }
+    
+    public void consultaFuncion(String consultaSQL){
+        try {
+            Statement sentencia = conexion.createStatement();
+            sentencia.execute(consultaSQL);
+        } catch (SQLException ex) {
+            Logger.getLogger(ConexionBD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 }
