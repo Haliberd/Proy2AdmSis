@@ -21,21 +21,12 @@ public class ConexionBD
     private String password;
     private Connection conexion;
     
-    //hacer que reciba la url password y usuario para que sirva para todas las estaciones de servicios
-    
     public ConexionBD(String url, String usuario, String password)
     {
         
         this.url = url;
         this.usuario = usuario;
         this.password = password;
-        
-        
-        /*
-        url = "jdbc:postgresql://localhost:5432/BDSantiago";
-        usuario = "postgres";
-        password = "1234";*/
-
         try {
             Class.forName("org.postgresql.Driver");
             conexion = DriverManager.getConnection(url, usuario, password);
@@ -68,7 +59,7 @@ public class ConexionBD
         }
     }
     
-    public int consultaCambioPrecio(String consultaSQL){
+    public int consultaModificar(String consultaSQL){
         try {
             Statement sentencia = conexion.createStatement();
             int respuesta = sentencia.executeUpdate(consultaSQL);

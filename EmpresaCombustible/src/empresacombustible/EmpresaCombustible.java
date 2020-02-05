@@ -34,12 +34,12 @@ public class EmpresaCombustible {
         int opcion = 1;
         while(opcion != 0)
         {
-            System.out.println("-MENÚ-");
-            System.out.println("1) Estación de Servicio Santiago");
-            System.out.println("2) -En construcción- Estación de Servicio Curicó");
-            System.out.println("3) -En construcción- Estación de Servicio Talca");
-            System.out.println("0) Salir");
-            System.out.println("Ingrese su opción: ");
+            System.out.println("-MENÚ-\n" + 
+                    "1) Estación de Servicio Santiago\n" +
+                    "2) -En construcción- Estación de Servicio Curicó\n" +
+                    "3) -En construcción- Estación de Servicio Talca\n" +
+                    "0) Salir\n" +
+                    "Ingrese su opción: ");
             Scanner s = new Scanner(System.in);
             opcion = s.nextInt();
             
@@ -49,13 +49,13 @@ public class EmpresaCombustible {
                 
                 while(opcionUno != 0)
                 {
-                    System.out.println("-MENÚ Estación de Servicio Santiago-");
-                    System.out.println("1) Cambiar precio del combustible 93");
-                    System.out.println("2) Cambiar precio del combustible 95");
-                    System.out.println("3) Cambiar precio del combustible 97");
-                    System.out.println("4) Cambiar precio del combustible Diesel");
-                    System.out.println("5) Cambiar precio del combustible Kerosene");
-                    System.out.println("0) Volver al Menú Principal");
+                    System.out.println("-MENÚ Estación de Servicio Santiago-\n" +
+                            "1) Cambiar precio del combustible 93\n" +
+                            "2) Cambiar precio del combustible 95\n" +
+                            "3) Cambiar precio del combustible 97\n" +
+                            "4) Cambiar precio del combustible Diesel\n" +
+                            "5) Cambiar precio del combustible Kerosene\n" +
+                            "0) Volver al Menú Principal");
                     
                     System.out.println("Ingrese su opción: ");
                     opcionUno = s.nextInt();

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,9 +21,11 @@ import java.util.logging.Logger;
  */
 public class DistribuidorSantiago 
 {
+    private static String nombre = "Santiago";
     private Runnable TCliente;
     private Runnable TServidor;
-    private int precio93, precio95, precio97, precioDiesel, precioKerosene;
+    private static int precio93, precio95, precio97, precioDiesel, precioKerosene;
+    private static double factorUtilidad;
     private static ConexionBD conexion;
   
     public DistribuidorSantiago()
@@ -31,11 +34,14 @@ public class DistribuidorSantiago
         String usuario = "postgres";
         String password = "1234";
         conexion = new ConexionBD(url, usuario, password);
+        
+        /*
         this.precio93 = 900;
         this.precio95 = 901;
         this.precio97 = 902;
         this.precioDiesel = 600;
         this.precioKerosene = 300;
+        this.factorUtilidad = 0.01;*/
         TCliente = new ThreadCliente();
         TServidor = new ThreadServidor();
         
@@ -58,8 +64,10 @@ public class DistribuidorSantiago
         else{
             System.out.println("Ha fracasado la inserción!");
         }*/
+        
         DistribuidorSantiago DSantiago = new DistribuidorSantiago();
         
+        /*
         String consultaSQL = "SELECT * FROM surtidor";
         ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
         
@@ -76,6 +84,59 @@ public class DistribuidorSantiago
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }*/
+        
+        String consultaSQL = "SELECT * FROM EstacionDeServicio WHERE nombre = 'Santiago'";
+        ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
+        
+        try {
+            while(resultado.next()){
+                nombre = resultado.getString("nombre");
+                factorUtilidad = resultado.getDouble("factorutilidad");
+                precio93 = resultado.getInt("precio93");
+                precio95 = resultado.getInt("precio95");
+                precio97 = resultado.getInt("precio97");
+                precioDiesel = resultado.getInt("preciodiesel");
+                precioKerosene = resultado.getInt("preciokerosene");
+                aplicarFactorUtilidad();
+                System.out.println(nombre+" "+factorUtilidad+" "+precio93+" "+precio95+" "+precio97+" "+precioDiesel+" "+precioKerosene);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        int opcion = 1;
+        while(opcion != 0)
+        {
+            Scanner s = new Scanner(System.in);
+            System.out.println("-MENÚ-\n" +
+                    "1)Cambiar Factor de Utilidad\n" +
+                    "0)Salir\n" +
+                    "Ingrese su opción: ");
+
+            opcion = s.nextInt();
+            if(opcion == 1)
+            {
+                s = new Scanner(System.in);
+                System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
+                double factor = s.nextDouble();
+                modificarFactorUtilidad(factor);
+            }
+        }
+    }
+    
+    public static void modificarFactorUtilidad(double factor)
+    {
+        factorUtilidad = factor;
+                String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
+                +" WHERE nombre = 'Santiago'";
+        System.out.println(consultaSQL);
+        int respuesta = conexion.consultaModificar(consultaSQL);
+        if(respuesta > 0){
+            System.out.println("Cambio de factor de utilidad realizado con éxito!");
+        }
+        else{
+            System.out.println("Ha fracasado la modificación!");
         }
     }
     
@@ -192,12 +253,22 @@ public class DistribuidorSantiago
         String consultaSQL = "UPDATE EstacionDeServicio SET "+combustible+"="+precio
                 +" WHERE nombre = 'Santiago'";
         //System.out.println(consultaSQL);
-        int respuesta = conexion.consultaCambioPrecio(consultaSQL);
+        int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
             System.out.println("Cambio de "+combustible+" realizado con éxito!");
         }
         else{
-            System.out.println("Ha fracasado la inserción!");
+            System.out.println("Ha fracasado la modificación!");
         }
+    }
+    
+    /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD*/
+    public static void aplicarFactorUtilidad()
+    {
+       precio93 = precio93 + (int)(precio93 * factorUtilidad);
+       precio95 = precio95 + (int)(precio95 * factorUtilidad);
+       precio97 = precio97 + (int)(precio97 * factorUtilidad);
+       precioDiesel = precioDiesel + (int)(precioDiesel * factorUtilidad);
+       precioKerosene = precioKerosene + (int)(precioKerosene * factorUtilidad);
     }
 }
