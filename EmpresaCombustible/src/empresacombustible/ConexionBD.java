@@ -24,7 +24,7 @@ public class ConexionBD
     private String password;
     private Connection conexion;
     
-    public ConexionBD(String url, String usuario, String password)
+    public ConexionBD(String url, String usuario, String password, String nombre)
     {
         
         this.url = url;
@@ -33,7 +33,7 @@ public class ConexionBD
         try {
             Class.forName("org.postgresql.Driver");
             conexion = DriverManager.getConnection(url, usuario, password);
-            System.out.println("Conexión exitosa!");
+            System.out.println("¡Conectado a la base de datos "+nombre+"!");
         } catch (Exception e) {
             e.printStackTrace();
         }        
