@@ -98,12 +98,20 @@ create or replace function litros_disponibles(varchar(45), float) returns float 
 		select LitrosDisponibles, LitrosConsumidos, CargasRealizadas, Nombre, Precio into cantidad_actual, cantidad_cargada, nRecargas, referencia_surtidor, precio_venta 
 		from Surtidor where tipo_combustible = Surtidor.tipo;
 		fin := (cantidad_actual - cantidad);
-		if fin < 0 then
-			update Surtidor set LitrosDisponibles = 0, LitrosConsumidos = (cantidad_cargada + cantidad_actual), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-			insert into Ventas values (referencia_surtidor, precio_venta, cantidad_actual);
-		elseif fin >= 0 then
-			update Surtidor set LitrosDisponibles = fin, LitrosConsumidos = (cantidad_cargada + cantidad), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-			insert into Ventas values (referencia_surtidor, precio_venta, cantidad);
+		-- Se encarga de que haya combustible disponible para cargar.
+		if cantidad_actual <> 0 then
+			if fin < 0 then
+				update Surtidor set LitrosDisponibles = 0, LitrosConsumidos = (cantidad_cargada + cantidad_actual), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
+				insert into Ventas values (referencia_surtidor, precio_venta, cantidad_actual);
+				-- Devuelve la cantidad cargada de forma negativa, por razones de programacion.
+				fin := (cantidad_actual*(-1));
+			elseif fin >= 0 then
+				update Surtidor set LitrosDisponibles = fin, LitrosConsumidos = (cantidad_cargada + cantidad), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
+				insert into Ventas values (referencia_surtidor, precio_venta, cantidad);
+				fin := cantidad;
+			end if;
+		elseif cantidad_actual = 0 then
+			fin := 0;
 		end if;
 		return fin;
 	end; $$ language plpgsql volatile cost 100;
