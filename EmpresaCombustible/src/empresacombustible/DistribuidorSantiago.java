@@ -326,7 +326,25 @@ public class DistribuidorSantiago
     }
     
     public int consultaCargaCombustible(String tipo, String cantidad){
-        String consultaSQL = "SELECT litros_disponibles( " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
+        String tipo_columna = "";
+        switch(tipo){
+            case ("93"):
+                tipo_columna = "'Precio93'";
+                break;
+            case ("95"):
+                tipo_columna = "'Precio95'";
+                break;
+            case ("97"):
+                tipo_columna = "'Precio97'";
+                break;
+            case ("petroleo"):
+                tipo_columna = "'PrecioDiesel'";
+                break;
+            case ("kerosene"):
+                tipo_columna = "'PrecioKerosene'";
+                break;
+        }
+        String consultaSQL = "SELECT litros_disponibles( " + tipo_columna + "::varchar(45), " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
         int resultado = conexion.consultaFuncion(consultaSQL);
         return resultado;
     }

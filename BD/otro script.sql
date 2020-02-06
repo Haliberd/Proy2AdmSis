@@ -84,30 +84,40 @@ alter table Ventas owner to postgres;
 insert into EstacionDeServicio values ('Santiago', 0.01, 400, 400, 400, 400, 400);
 insert into Surtidor values ('Hi', '93', 400, 0, 200, 0, 'Santiago');
 
-create or replace function litros_disponibles(varchar(45), float) returns float as $$
+create or replace function litros_disponibles(varchar(45), varchar(45), float) returns float as $$
 	declare
-		tipo_combustible alias for $1;
-		cantidad alias for $2;
+		tipo_precio alias for $1;
+		tipo_combustible alias for $2;
+		cantidad alias for $3;
 		cantidad_actual float;
 		cantidad_cargada float;
 		nRecargas integer;
 		fin float;
 		referencia_surtidor varchar(45);
 		precio_venta int;
+		precio_actual int;
 	begin
-		select LitrosDisponibles, LitrosConsumidos, CargasRealizadas, Nombre, Precio into cantidad_actual, cantidad_cargada, nRecargas, referencia_surtidor, precio_venta 
+		select LitrosDisponibles, LitrosConsumidos, CargasRealizadas, Nombre, Precio into cantidad_actual, cantidad_cargada, nRecargas, referencia_surtidor, precio_actual 
 		from Surtidor where tipo_combustible = Surtidor.tipo;
+		-- Se encarga de vender al precio actual, es decir, al precio que esta en la Estacion de servicio, el cual puede ser diferente que el del surtidor si es que anterior a esta
+		-- venta se ha realizado un cambio de precio.
+		execute 'select ' || tipo_precio || ' from EstacionDeServicio' into precio_venta;
+		-- Se encarga de actualizar el precio en Surtidor si es que el precio de venta ha cambiado.
+		if precio_actual <> precio_venta then
+			update Surtidor set Precio = precio_venta where Tipo = tipo_combustible;
+		end if;
 		fin := (cantidad_actual - cantidad);
 		-- Se encarga de que haya combustible disponible para cargar.
+		-- El precio de ventas hace referencia al monto total, o sea, cantidad cargada (ya sea cantidad_actual o cantidad) por el precio actual.
 		if cantidad_actual <> 0 then
 			if fin < 0 then
 				update Surtidor set LitrosDisponibles = 0, LitrosConsumidos = (cantidad_cargada + cantidad_actual), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, precio_venta, cantidad_actual);
+				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad_actual), cantidad_actual);
 				-- Devuelve la cantidad cargada de forma negativa, por razones de programacion.
 				fin := (cantidad_actual*(-1));
 			elseif fin >= 0 then
 				update Surtidor set LitrosDisponibles = fin, LitrosConsumidos = (cantidad_cargada + cantidad), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, precio_venta, cantidad);
+				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad), cantidad);
 				fin := cantidad;
 			end if;
 		elseif cantidad_actual = 0 then
