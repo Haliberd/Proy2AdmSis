@@ -236,16 +236,17 @@ public class EstacionServicio
             try {
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                while (bandera.compareTo("0") != 0) 
-                {
+                while (bandera.compareTo("0") != 0) {
                     bandera = in.readUTF();
                     String[] argumentos = bandera.split("-");
-                    if(argumentos.length == 2)
-                    {
-                        consultaCargaCombustible(argumentos[0], argumentos[1]);
+                    if(argumentos.length == 2){
+                        String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
+                        out.writeUTF(resultado);
                     }
-                    //Para continuar la conexion
-                    out.writeUTF("hi");
+                    else{//Para finalizar la conexion
+                        System.out.println("Closed: " + socket);
+                        socket.close();
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Error:" + socket);
@@ -356,9 +357,28 @@ public class EstacionServicio
         }
     }
     
-    public void consultaCargaCombustible(String tipo, String cantidad){
-        String consultaSQL = "SELECT litros_disponibles( " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
-        conexion.consultaFuncion(consultaSQL);
+    public int consultaCargaCombustible(String tipo, String cantidad){
+        String tipo_columna = "";
+        switch(tipo){
+            case ("93"):
+                tipo_columna = "'Precio93'";
+                break;
+            case ("95"):
+                tipo_columna = "'Precio95'";
+                break;
+            case ("97"):
+                tipo_columna = "'Precio97'";
+                break;
+            case ("petroleo"):
+                tipo_columna = "'PrecioDiesel'";
+                break;
+            case ("kerosene"):
+                tipo_columna = "'PrecioKerosene'";
+                break;
+        }
+        String consultaSQL = "SELECT litros_disponibles( " + tipo_columna + "::varchar(45), " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
+        int resultado = conexion.consultaFuncion(consultaSQL);
+        return resultado;
     }
     
     public void consultaCambioPrecio(String combustible, int precio)
