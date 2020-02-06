@@ -32,10 +32,26 @@ public class Surtidor {
                     System.out.println("Cantidad: ");
                     String cantidad = scanner.nextLine();
                     dataoutput.writeUTF(tipo + "-" + cantidad);
-                    System.out.println(datainput.readUTF());
+                    String resultado = datainput.readUTF();
+                    try{
+                        int valorResultado = Integer.valueOf(resultado);
+                        if(valorResultado < 0){
+                            System.out.println("No habia suficiente combustible para cargar.\n"
+                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                        }
+                        else if (valorResultado > 0){
+                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                        }
+                        else{
+                            System.out.println("No habia combustible para cargar.");
+                        }
+                    }catch(Exception e){
+                        
+                    }
                 }
-                dataoutput.writeUTF("0");
+                
             }
+            dataoutput.writeUTF("0");
         }catch(Exception e){
                 
         }
