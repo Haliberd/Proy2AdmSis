@@ -33,7 +33,7 @@ public class ConexionBD
         try {
             Class.forName("org.postgresql.Driver");
             conexion = DriverManager.getConnection(url, usuario, password);
-            System.out.println("Conexión exitosa!");
+            System.out.println("¡Conectado a la base de datos SANTIAGO!");
         } catch (Exception e) {
             e.printStackTrace();
         }        

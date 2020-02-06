@@ -7,7 +7,9 @@ package empresacombustible;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
@@ -31,6 +33,7 @@ public class DistribuidorSantiago
     private static int precio93, precio95, precio97, precioDiesel, precioKerosene;
     private static double factorUtilidad;
     private static ConexionBD conexion;
+    private static GeneradorArchivos generador;
   
     public DistribuidorSantiago()
     {
@@ -38,7 +41,7 @@ public class DistribuidorSantiago
         String usuario = "postgres";
         String password = "1234";
         conexion = new ConexionBD(url, usuario, password);
-        
+        generador = new GeneradorArchivos();
         
         this.precio93 = 900;
         this.precio95 = 901;
@@ -46,56 +49,24 @@ public class DistribuidorSantiago
         this.precioDiesel = 600;
         this.precioKerosene = 300;
         this.factorUtilidad = 0.01;
-        //TCliente = new ThreadCliente();
-        TServidor = new ThreadServidor();
+
+        TServidor = new ListenerEmpresa();
         TLocal = new ThreadLocal();
         TRecibidor = new ThreadRecibidor();
         
         Thread l = new Thread(TLocal);
-        //Thread c = new Thread(TCliente);
         Thread s = new Thread(TServidor);
         Thread t = new Thread(TRecibidor);
         t.start();
         l.start();
-        //c.start();
         s.start();
     }
     
     public static void main(String[] args)
     {
-        //ConexionBD conexion = new ConexionBD();
-        
-        /*
-        String consultaSQL = "INSERT INTO public.servidor (código, nombre_s, habdescarga, velocidad) VALUES (122, 'Prueba', false, 0)";
-        int respuesta = conexion.consultaInsertar(consultaSQL);
-        if(respuesta > 0){
-            System.out.println("Inserción realizada con éxito!");
-        }
-        else{
-            System.out.println("Ha fracasado la inserción!");
-        }*/
-        
         DistribuidorSantiago DSantiago = new DistribuidorSantiago();
-        
+      
         /*
-        String consultaSQL = "SELECT * FROM surtidor";
-        ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
-        
-        try {
-            while(resultado.next()){
-                String nombre = resultado.getString("nombre");
-                String tipo = resultado.getString("tipo");
-                int precio = resultado.getInt("precio");
-                float litrosConsumidos = resultado.getFloat("litrosconsumidos");
-                float litrosDisponibles = resultado.getFloat("litrosdisponibles");
-                int cargas = resultado.getInt("cargasrealizadas");
-                String refEstacion = resultado.getString("refestacion");
-                System.out.println(nombre+" "+tipo+" "+precio+" "+litrosConsumidos+" "+litrosDisponibles+" "+cargas+" "+refEstacion);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        
         String consultaSQL = "SELECT * FROM EstacionDeServicio WHERE nombre = 'Santiago'";
         ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
         
@@ -112,11 +83,31 @@ public class DistribuidorSantiago
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         
+         solicitarInfoSurtidores();
         
     }
     
+    public static int solicitarInfoVentas()
+    {
+        String consultaSQL = "SELECT refsurtidor as Surtidor, sum(precio) AS valorTotal, sum(litros) as litrosVendidos FROM Ventas "+
+                            "GROUP BY refsurtidor";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        
+        int tamanoArchivo = generador.generarInfoVentas(informacion);
+        return tamanoArchivo;
+    }
+    
+    public static int solicitarInfoSurtidores()
+    {
+        String consultaSQL = "SELECT nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas FROM Surtidor";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        
+        int tamanoArchivo = generador.generarInfoSurtidores(informacion);
+        return tamanoArchivo;
+    }
+
     public static void modificarFactorUtilidad(double factor)
     {
         factorUtilidad = factor;
@@ -159,53 +150,23 @@ public class DistribuidorSantiago
         
     }
     
-    class ThreadCliente implements Runnable
-    {    
-        @Override
-        public void run() 
-        {
-            /*
-            //Dirección del localhost
-            final String host = "127.0.0.1";
-            final int puerto = 5500;
-            DataInputStream input;
-            DataOutputStream output;
-                       
-            try {
-                Socket socket = new Socket(host, puerto);
-                input = new DataInputStream(socket.getInputStream());
-                output = new DataOutputStream(socket.getOutputStream());
-                
-                output.writeUTF("Mensaje hacia el servidor del distribuidor Santiago");
-                
-                String mensaje = input.readUTF();
-                
-                System.out.println(mensaje);
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            */
-        }
-    }
-    
     class ThreadRecibidor implements Runnable{
 
         @Override
         public void run() {
             
-            try (ServerSocket listener = new ServerSocket(59898)) {
-            System.out.println("El servidor de servicio esta corriendo...");
-            ExecutorService pool = Executors.newFixedThreadPool(6);
-            while (true) {
-                pool.execute(new ListenerSurtidor(listener.accept()));
+            try (ServerSocket listener = new ServerSocket(59898))
+            {
+                ExecutorService pool = Executors.newFixedThreadPool(6);
+                while (true) 
+                {
+                    pool.execute(new ListenerSurtidor(listener.accept()));
                 }
             } catch (IOException ex) {
                 Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
             }
          
         }
-        
     }
     
     class ListenerSurtidor implements Runnable{
@@ -223,10 +184,12 @@ public class DistribuidorSantiago
             try {
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                while (bandera.compareTo("0") != 0) {
+                while (bandera.compareTo("0") != 0) 
+                {
                     bandera = in.readUTF();
                     String[] argumentos = bandera.split("-");
-                    if(argumentos.length == 2){
+                    if(argumentos.length == 2)
+                    {
                         consultaCargaCombustible(argumentos[0], argumentos[1]);
                     }
                     //Para continuar la conexion
@@ -235,16 +198,15 @@ public class DistribuidorSantiago
             } catch (Exception e) {
                 System.out.println("Error:" + socket);
                 System.out.println(e.getMessage());
-            } finally {
+            } /*finally {
                 try { socket.close();
             } catch (IOException e) {}
                 System.out.println("Closed: " + socket);
-            }
+            }*/
         }
-        
     }
     
-    class ThreadServidor implements Runnable
+    class ListenerEmpresa implements Runnable
     {
         @Override
         public void run() 
@@ -254,25 +216,48 @@ public class DistribuidorSantiago
             DataInputStream input;
             DataOutputStream output;
             
-            final int puerto = 5500;
+            final int puerto = 55500;
             
             try { 
                 servidor = new ServerSocket(puerto);
-                System.out.println("Servidor Estacion de Servicio Santiago INICIADO");
+                System.out.println("¡Servidor Estación de Servicio Santiago INICIADO!");
                 while(true)
                 {
                     socket = servidor.accept();
-                    System.out.println("Se ha conectado la empresa!");
                     input = new DataInputStream(socket.getInputStream());
                     output = new DataOutputStream(socket.getOutputStream());
                     
                     String mensaje = input.readUTF();
-                    //System.out.println(mensaje);
-                    
-                    // HACER UN FOR QUE VERIFIQUE SI UNA SENTENCIA X ESTABA DENTRO DEL STRING, PARA GENERAR LAS CONSULTAS DESDE LOS SURTIDORES
+
                     String[] msjeSplit = mensaje.split("-");
-                    
-                    if(msjeSplit[0].equals("Cambio precio"))
+                    if(msjeSplit[0].equals("Informacion"))
+                    {
+                        if(msjeSplit[1].equals("Ventas"))
+                        {
+                            DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
+                            byte[] b;
+                            int tamanoArchivo = solicitarInfoVentas();
+                            msje.writeUTF(Integer.toString(tamanoArchivo));
+                            FileInputStream archivo = new FileInputStream("informacion_Ventas.txt");
+                            b = new byte[tamanoArchivo];
+                            archivo.read(b, 0, b.length);
+                            OutputStream outputS = socket.getOutputStream();
+                            outputS.write(b, 0, b.length);
+                        }
+                        else if(msjeSplit[1].equals("Surtidores"))
+                        {
+                            DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
+                            byte[] b;
+                            int tamanoArchivo = solicitarInfoSurtidores();
+                            msje.writeUTF(Integer.toString(tamanoArchivo));
+                            FileInputStream archivo = new FileInputStream("informacion_Surtidores.txt");
+                            b = new byte[tamanoArchivo];
+                            archivo.read(b, 0, b.length);
+                            OutputStream outputS = socket.getOutputStream();
+                            outputS.write(b, 0, b.length);
+                        }
+                    }
+                    else if(msjeSplit[0].equals("Cambio precio"))
                     {
                         int precio = Integer.parseInt(msjeSplit[2]);
                         if(msjeSplit[1].equals("93"))
