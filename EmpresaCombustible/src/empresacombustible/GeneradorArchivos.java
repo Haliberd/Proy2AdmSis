@@ -46,7 +46,7 @@ public class GeneradorArchivos
             System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
             tamanoArchivo = Math.toIntExact(archivo.length());
         } catch (IOException ex) {
-            Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
         }     
         return tamanoArchivo;
     }
@@ -86,7 +86,7 @@ public class GeneradorArchivos
             System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
             tamanoArchivo = Math.toIntExact(archivo.length());
         } catch (IOException ex) {
-            Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
         }     
         return tamanoArchivo;
     }

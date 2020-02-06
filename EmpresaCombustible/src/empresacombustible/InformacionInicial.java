@@ -9,7 +9,7 @@ package empresacombustible;
  *
  * @author Javiera Méndez
  */
-public class DistribuidorTalca 
+public class InformacionInicial 
 {
     
 }

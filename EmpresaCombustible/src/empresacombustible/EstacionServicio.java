@@ -23,9 +23,11 @@ import java.util.logging.Logger;
  *
  * @author Javiera Méndez
  */
-public class DistribuidorSantiago 
+public class EstacionServicio 
 {
-    private static String nombre = "Santiago";
+    private static String nombre, url, usuario, password;
+    private static int puertoServidorEmpresa;
+    private static int puertoServidorSurtidores;
     //private Runnable TCliente;
     private Runnable TServidor;
     private Runnable TLocal;
@@ -35,20 +37,17 @@ public class DistribuidorSantiago
     private static ConexionBD conexion;
     private static GeneradorArchivos generador;
   
-    public DistribuidorSantiago()
+    public EstacionServicio(String nombreEstacion, String url, String usuario, String password, int puertoEmpresa, int puertoSurtidores)
     {
-        String url = "jdbc:postgresql://localhost:5432/BDSantiago";
-        String usuario = "postgres";
-        String password = "1234";
-        conexion = new ConexionBD(url, usuario, password);
-        generador = new GeneradorArchivos();
+        this.nombre = nombreEstacion;
+        this.url = url;
+        this.usuario = usuario;
+        this.password = password;
+        this.puertoServidorEmpresa = puertoEmpresa;
+        this.puertoServidorSurtidores = puertoSurtidores;
         
-        this.precio93 = 900;
-        this.precio95 = 901;
-        this.precio97 = 902;
-        this.precioDiesel = 600;
-        this.precioKerosene = 300;
-        this.factorUtilidad = 0.01;
+        conexion = new ConexionBD(url, usuario, password, nombreEstacion);
+        generador = new GeneradorArchivos();
 
         TServidor = new ListenerEmpresa();
         TLocal = new ThreadLocal();
@@ -64,30 +63,83 @@ public class DistribuidorSantiago
     
     public static void main(String[] args)
     {
-        DistribuidorSantiago DSantiago = new DistribuidorSantiago();
-      
-        /*
-        String consultaSQL = "SELECT * FROM EstacionDeServicio WHERE nombre = 'Santiago'";
-        ResultSet resultado = conexion.consultaBusqueda(consultaSQL);
         
+        int opcion = 1;
+        boolean inicioEstacion = false;
+        while((opcion != 0) && (inicioEstacion == false))
+        {
+            System.out.println("- BIENVENIDOS -\n" + 
+                    "1) EJECUTAR Estación de Servicio Santiago\n" +
+                    "2) EJECUTAR Estación de Servicio Curicó\n" +
+                    "3) EJECUTAR Estación de Servicio Talca\n" +
+                    "0) Salir\n" +
+                    "Ingrese su opción: ");
+            Scanner s = new Scanner(System.in);
+            opcion = s.nextInt();
+            String nombre, url, usuario, password;
+            int puertoEmpresa, puertoSurtidores;
+            switch (opcion) {
+                case 1:
+                    nombre = "Santiago";
+                    url = "jdbc:postgresql://localhost:5432/BDSantiago";
+                    usuario = "postgres";
+                    password = "1234";
+                    puertoEmpresa = 55500;
+                    puertoSurtidores = 59898;
+                    EstacionServicio Santiago = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                    System.out.println("Iniciando Estacion de Servicio Santiago...");
+                    obtenerFactoryPrecios();
+                    inicioEstacion = true;
+                    break;
+                case 2:
+                    nombre = "Curico";
+                    url = "jdbc:postgresql://localhost:5432/BDCurico";
+                    usuario = "postgres";
+                    password = "1234";
+                    puertoEmpresa = 45500;
+                    puertoSurtidores = 49898;
+                    EstacionServicio Curico = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                    System.out.println("Iniciando Estacion de Servicio Curicó...");
+                    obtenerFactoryPrecios();
+                    inicioEstacion = true;
+                    break;
+                case 3:
+                    nombre = "Talca";
+                    url = "jdbc:postgresql://localhost:5432/BDTalca";
+                    usuario = "postgres";
+                    password = "1234";
+                    puertoEmpresa = 35500;
+                    puertoSurtidores = 39898;
+                    EstacionServicio Talca = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                    System.out.println("Iniciando Estacion de Servicio Talca...");
+                    obtenerFactoryPrecios();
+                    inicioEstacion = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    public static void obtenerFactoryPrecios(){
+        String consultaSQL = "SELECT factorutilidad, precio93, precio95, precio97, preciodiesel, preciokerosene FROM estaciondeservicio"
+                + " WHERE nombre = '"+nombre+"'";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
         try {
-            while(resultado.next()){
-                nombre = resultado.getString("nombre");
-                factorUtilidad = resultado.getDouble("factorutilidad");
-                precio93 = resultado.getInt("precio93");
-                precio95 = resultado.getInt("precio95");
-                precio97 = resultado.getInt("precio97");
-                precioDiesel = resultado.getInt("preciodiesel");
-                precioKerosene = resultado.getInt("preciokerosene");
-                System.out.println(nombre+" "+factorUtilidad+" "+precio93+" "+precio95+" "+precio97+" "+precioDiesel+" "+precioKerosene);
+            while(informacion.next()){
+                factorUtilidad = informacion.getDouble("factorutilidad");
+                precio93 = informacion.getInt("precio93");
+                precio95 = informacion.getInt("precio95");
+                precio97 = informacion.getInt("precio97");
+                precioDiesel = informacion.getInt("precioDiesel");
+                precioKerosene = informacion.getInt("precioKerosene");
+                System.out.println("factor: "+factorUtilidad);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
-        
-         solicitarInfoSurtidores();
-        
+        }
     }
+            
     
     public static int solicitarInfoVentas()
     {
@@ -112,7 +164,7 @@ public class DistribuidorSantiago
     {
         factorUtilidad = factor;
         String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
-                +" WHERE nombre = 'Santiago'";
+                +" WHERE nombre = '"+nombre+"'";
         System.out.println(consultaSQL);
         int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
@@ -155,7 +207,7 @@ public class DistribuidorSantiago
         @Override
         public void run() {
             
-            try (ServerSocket listener = new ServerSocket(59898))
+            try (ServerSocket listener = new ServerSocket(puertoServidorSurtidores))
             {
                 ExecutorService pool = Executors.newFixedThreadPool(6);
                 while (true) 
@@ -163,7 +215,7 @@ public class DistribuidorSantiago
                     pool.execute(new ListenerSurtidor(listener.accept()));
                 }
             } catch (IOException ex) {
-                Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
             }
          
         }
@@ -214,13 +266,11 @@ public class DistribuidorSantiago
             ServerSocket servidor = null;
             Socket socket = null;
             DataInputStream input;
-            DataOutputStream output;
-            
-            final int puerto = 55500;
+            DataOutputStream output; 
             
             try { 
-                servidor = new ServerSocket(puerto);
-                System.out.println("¡Servidor Estación de Servicio Santiago INICIADO!");
+                servidor = new ServerSocket(puertoServidorEmpresa);
+                //System.out.println("¡Servidor Estación de Servicio "+nombre+" INICIADO!");
                 while(true)
                 {
                     socket = servidor.accept();
@@ -264,45 +314,44 @@ public class DistribuidorSantiago
                         {
                             consultaCambioPrecio("precio93", precio);
                             output.writeUTF("El precio actual es $"+precio93);
-                            precio93 = precio;
+                            precio93 = precio + (int) (precio* factorUtilidad);
                             output.writeUTF("El nuevo precio es $"+precio93);
                         }
                         else if(msjeSplit[1].equals("95"))
                         {
                             consultaCambioPrecio("precio95", precio);
                             output.writeUTF("El precio actual es $"+precio95);
-                            precio95 = precio;
+                            precio95 = precio + (int) (precio* factorUtilidad);
                             output.writeUTF("El nuevo precio es $"+precio95);
                         }
                         else if(msjeSplit[1].equals("97"))
                         {
                             consultaCambioPrecio("precio97", precio);
                             output.writeUTF("El precio actual es $"+precio97);
-                            precio97 = precio;
+                            precio97 = precio + (int) (precio* factorUtilidad);
                             output.writeUTF("El nuevo precio es $"+precio97);
                         }
                         else if(msjeSplit[1].equals("Diesel"))
                         {
                             consultaCambioPrecio("precioDiesel", precio);
                             output.writeUTF("El precio actual es $"+precioDiesel);
-                            precioDiesel = precio;
+                            precioDiesel = precio + (int) (precio* factorUtilidad);
                             output.writeUTF("El nuevo precio es $"+precioDiesel);
                         }
                         else if(msjeSplit[1].equals("Kerosene"))
                         {
                             consultaCambioPrecio("precioKerosene", precio);
                             output.writeUTF("El precio actual es $"+precioKerosene);
-                            precioKerosene = precio;
+                            precioKerosene = precio + (int) (precio* factorUtilidad);
                             output.writeUTF("El nuevo precio es $"+precioKerosene);
                         }
                     }
                     output.writeUTF("Fin");
                     socket.close();
-                    System.out.println("Se ha desconectado a la empresa");
-                    
+                    //System.out.println("Se ha desconectado a la empresa");
                 }
             } catch (IOException ex) {
-                Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -314,8 +363,9 @@ public class DistribuidorSantiago
     
     public void consultaCambioPrecio(String combustible, int precio)
     {  
+        precio = precio + (int) (precio * factorUtilidad);
         String consultaSQL = "UPDATE EstacionDeServicio SET "+combustible+"="+precio
-                +" WHERE nombre = 'Santiago'";
+                +" WHERE nombre = '"+nombre+"'";
         //System.out.println(consultaSQL);
         int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
@@ -341,11 +391,11 @@ public class DistribuidorSantiago
                 " ,precio97 = "+precio97+
                 " ,precioDiesel = "+precioDiesel+
                 " ,precioKerosene = "+precioKerosene+
-                " WHERE nombre = 'Santiago'";
+                " WHERE nombre = '"+nombre+"'";
         //System.out.println(consultaSQL);
         int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
-            System.out.println("Factor de utilidad aplicado a los precios Estacion de Servicio SANTIAGO");
+            System.out.println("Factor de utilidad aplicado a los precios Estacion de Servicio "+nombre);
         }
         else{
             System.out.println("No se ha podido aplicar el factor de utilidad a los precios!");

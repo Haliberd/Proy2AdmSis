@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -231,7 +232,7 @@ public class EmpresaCombustible {
             }
             socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(DistribuidorSantiago.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
         }   
     }
     
@@ -242,5 +243,26 @@ public class EmpresaCombustible {
         String fechaActual = formatter.format(date);  
         //System.out.println("Date Format with MM-dd-yyyy : "+fechaActual);  
         return fechaActual;
+    }
+    
+    public static int verificarInputInt(Scanner s){
+        int opcion = -1;
+        int flag = -1;
+        while(flag == -1)
+        {
+            try{
+                System.out.println("Ingrese su opción: ");
+                opcion = s.nextInt();
+                System.out.println("x");
+            }catch(InputMismatchException e){
+                System.out.println("Debes ingresar un valor numérico...");
+            }
+        }
+        
+        /*
+        finally{
+            System.out.println("Finally!!! ;) ");
+        }*/
+        return opcion;
     }
 }
