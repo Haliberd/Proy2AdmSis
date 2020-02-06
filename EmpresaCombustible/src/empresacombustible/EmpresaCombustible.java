@@ -110,6 +110,7 @@ public class EmpresaCombustible {
         }
     } 
     
+    /*HACER UN WHILE PARA QUE SIEMPRE ESTÉ ESCUCHANDO LO QUE PASA EN EL MENÚ DE LA EMPRESA*/
     public static void testCambioPrecioSantiago(int nuevoPrecio, String combustible)
     {
         //Dirección del localhost

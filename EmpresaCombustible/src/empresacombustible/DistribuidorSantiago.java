@@ -98,7 +98,6 @@ public class DistribuidorSantiago
                 precio97 = resultado.getInt("precio97");
                 precioDiesel = resultado.getInt("preciodiesel");
                 precioKerosene = resultado.getInt("preciokerosene");
-                aplicarFactorUtilidad();
                 System.out.println(nombre+" "+factorUtilidad+" "+precio93+" "+precio95+" "+precio97+" "+precioDiesel+" "+precioKerosene);
             }
         } catch (Exception e) {
@@ -128,12 +127,13 @@ public class DistribuidorSantiago
     public static void modificarFactorUtilidad(double factor)
     {
         factorUtilidad = factor;
-                String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
+        String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
                 +" WHERE nombre = 'Santiago'";
         System.out.println(consultaSQL);
         int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
             System.out.println("Cambio de factor de utilidad realizado con éxito!");
+            aplicarFactorUtilidad();
         }
         else{
             System.out.println("Ha fracasado la modificación!");
@@ -262,13 +262,29 @@ public class DistribuidorSantiago
         }
     }
     
-    /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD*/
+    /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD
+    , pues al volver a cargar la BD volvería a aplicar el factor de utilidad a los precios*/
     public static void aplicarFactorUtilidad()
     {
-       precio93 = precio93 + (int)(precio93 * factorUtilidad);
-       precio95 = precio95 + (int)(precio95 * factorUtilidad);
-       precio97 = precio97 + (int)(precio97 * factorUtilidad);
-       precioDiesel = precioDiesel + (int)(precioDiesel * factorUtilidad);
-       precioKerosene = precioKerosene + (int)(precioKerosene * factorUtilidad);
+        precio93 = precio93 + (int)(precio93 * factorUtilidad);
+        precio95 = precio95 + (int)(precio95 * factorUtilidad);
+        precio97 = precio97 + (int)(precio97 * factorUtilidad);
+        precioDiesel = precioDiesel + (int)(precioDiesel * factorUtilidad);
+        precioKerosene = precioKerosene + (int)(precioKerosene * factorUtilidad);
+       
+        String consultaSQL = "UPDATE EstacionDeServicio SET precio93 = "+precio93+
+                " ,precio95 = "+precio95+
+                " ,precio97 = "+precio97+
+                " ,precioDiesel = "+precioDiesel+
+                " ,precioKerosene = "+precioKerosene+
+                " WHERE nombre = 'Santiago'";
+        //System.out.println(consultaSQL);
+        int respuesta = conexion.consultaModificar(consultaSQL);
+        if(respuesta > 0){
+            System.out.println("Factor de utilidad aplicado a los precios Estacion de Servicio SANTIAGO");
+        }
+        else{
+            System.out.println("No se ha podido aplicar el factor de utilidad a los precios!");
+        }
     }
 }

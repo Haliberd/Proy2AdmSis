@@ -40,7 +40,7 @@ public class ConexionBD
         try {
             Statement sentencia = conexion.createStatement();
             int respuesta = sentencia.executeUpdate(consultaSQL);
-            System.out.println(respuesta);
+            //System.out.println(respuesta);
             return respuesta;
         } catch (Exception e) {
             e.printStackTrace();
