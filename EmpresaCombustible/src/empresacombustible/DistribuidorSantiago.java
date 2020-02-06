@@ -227,19 +227,22 @@ public class DistribuidorSantiago
                     bandera = in.readUTF();
                     String[] argumentos = bandera.split("-");
                     if(argumentos.length == 2){
-                        consultaCargaCombustible(argumentos[0], argumentos[1]);
+                        String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
+                        out.writeUTF(resultado);
                     }
-                    //Para continuar la conexion
-                    out.writeUTF("hi");
+                    else{//Para finalizar la conexion
+                        System.out.println("Closed: " + socket);
+                        socket.close();
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Error:" + socket);
                 System.out.println(e.getMessage());
-            } finally {
+            } /*finally {
                 try { socket.close();
             } catch (IOException e) {}
                 System.out.println("Closed: " + socket);
-            }
+            }*/
         }
         
     }
@@ -322,9 +325,10 @@ public class DistribuidorSantiago
         }
     }
     
-    public void consultaCargaCombustible(String tipo, String cantidad){
+    public int consultaCargaCombustible(String tipo, String cantidad){
         String consultaSQL = "SELECT litros_disponibles( " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
-        conexion.consultaFuncion(consultaSQL);
+        int resultado = conexion.consultaFuncion(consultaSQL);
+        return resultado;
     }
     
     public void consultaCambioPrecio(String combustible, int precio)

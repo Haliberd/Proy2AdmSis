@@ -73,13 +73,25 @@ public class ConexionBD
         }
     }
     
-    public void consultaFuncion(String consultaSQL){
+    
+    //Funcion que ejecuta funciones de postgresql
+    /*
+    * Para el caso de la funcion litros_disponibles, los resultados posibles son
+    * Un valor positivo mayor a 0 si es que habia suficiente combustible.
+    * Un valor negativo si es que no habia suficiente combustible.
+    * 0 si es que no habia combustible para cargar.
+    */
+    public int consultaFuncion(String consultaSQL){
         try {
             Statement sentencia = conexion.createStatement();
-            sentencia.execute(consultaSQL);
+            ResultSet resultado = sentencia.executeQuery(consultaSQL);
+            //Se salta la primera linea, que corresponde a los titulos de las columnas (al parecer)
+            resultado.next();
+            int nResultado = resultado.getInt(1);
+            return nResultado;
         } catch (SQLException ex) {
             Logger.getLogger(ConexionBD.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        return 0;
     }
 }
