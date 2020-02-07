@@ -45,8 +45,8 @@ public class EmpresaCombustible {
         {
             System.out.println("-MENÚ-\n" + 
                     "1) Estación de Servicio Santiago\n" +
-                    "2) -En construcción- Estación de Servicio Curicó\n" +
-                    "3) -En construcción- Estación de Servicio Talca\n" +
+                    "2) Estación de Servicio Curicó\n" +
+                    "3) Estación de Servicio Talca\n" +
                     "0) Salir\n" +
                     "Ingrese su opción: ");
             Scanner s = new Scanner(System.in);
@@ -54,8 +54,8 @@ public class EmpresaCombustible {
             
             switch (opcion) {
                 case 1:
-                    int opcionUno = 1;
-                    while(opcionUno != 0)
+                    int opcionStgo = 1;
+                    while(opcionStgo != 0)
                     {
                         System.out.println("-MENÚ Estación de Servicio Santiago-\n" +
                                 "1) Cambiar precio del combustible\n" +
@@ -63,18 +63,18 @@ public class EmpresaCombustible {
                                 "0) Volver al Menú Principal");
                         
                         System.out.println("Ingrese su opción: ");
-                        opcionUno = s.nextInt();
+                        opcionStgo = s.nextInt();
 
-                        while(opcionUno < 0 || opcionUno > 2)
+                        while(opcionStgo < 0 || opcionStgo > 2)
                         {
                             System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                            opcionUno = s.nextInt();
+                            opcionStgo = s.nextInt();
                         }
                         
-                        if(opcionUno == 1)
+                        if(opcionStgo == 1)
                         {
-                            int opcionDos = 1;
-                            while(opcionDos != 0)
+                            int opcionUnoStgo = 1;
+                            while(opcionUnoStgo != 0)
                             {
                                 System.out.println("- MENÚ Estación de Servicio Santiago - CAMBIO DE PRECIOS\n" +
                                         "1) Cambiar precio del combustible 93\n" +
@@ -85,62 +85,30 @@ public class EmpresaCombustible {
                                         "0) Volver al Menú Estación de Servicio Santiago");
 
                                 System.out.println("Ingrese su opción: ");
-                                opcionDos = s.nextInt();
-                                while(opcionDos < 0 || opcionDos > 5)
+                                opcionUnoStgo = s.nextInt();
+                                while(opcionUnoStgo < 0 || opcionUnoStgo > 5)
                                 {
                                     System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionDos = s.nextInt();
+                                    opcionUnoStgo = s.nextInt();
                                 }
 
                                 int nuevoPrecio = 0;
-                                if(opcionDos != 0)
+                                if(opcionUnoStgo != 0)
                                 {
                                     System.out.println("Ingrese el nuevo precio: ");
                                     nuevoPrecio = s.nextInt();
                                 }
                                 
-                                String solicitud;
-                                switch (opcionDos) {
-                                    case 1:
-                                        {
-                                            solicitud = "Cambio precio-93-"+nuevoPrecio;
-                                            consultasDistribuidora(solicitud);
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            solicitud = "Cambio precio-95-"+nuevoPrecio;
-                                            consultasDistribuidora(solicitud);
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            solicitud = "Cambio precio-97-"+nuevoPrecio;
-                                            consultasDistribuidora(solicitud);
-                                            break;
-                                        }
-                                    case 4:
-                                        {
-                                            solicitud = "Cambio precio-Diesel-"+nuevoPrecio;
-                                            consultasDistribuidora(solicitud);
-                                            break;
-                                        }
-                                    case 5:
-                                        {
-                                            solicitud = "Cambio precio-Kerosene-"+nuevoPrecio;
-                                            consultasDistribuidora(solicitud);
-                                            break;
-                                        }
-                                    default:
-                                    break;
-                                }
-                            } break;
+                                /////
+                                menuCombustible(nuevoPrecio,opcionUnoStgo, 55500);
+                                /////
+                            } 
                         }
-                        else if(opcionUno == 2)
+                        else if(opcionStgo == 2)
                         {
-                            int opcionTres = 1;
+                            int opcionDosStgo = 1;
                             String solicitud;
-                            while(opcionTres != 0)
+                            while(opcionDosStgo != 0)
                             {
                                 System.out.println("- MENÚ Estación de Servicio Santiago - INFORMACIÓN\n" +
                                         "1) Solicitar información de Ventas\n" +
@@ -148,32 +116,195 @@ public class EmpresaCombustible {
                                         "0) Volver al Menú Estación de Servicio Santiago");
 
                                 System.out.println("Ingrese su opción: ");
-                                opcionTres = s.nextInt();
-                                while(opcionTres < 0 || opcionTres > 2)
+                                opcionDosStgo = s.nextInt();
+                                while(opcionDosStgo < 0 || opcionDosStgo > 2)
                                 {
                                     System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionTres = s.nextInt();
+                                    opcionDosStgo = s.nextInt();
                                 }
                                 
-                                if(opcionTres == 1){
+                                if(opcionDosStgo == 1)
+                                {
                                     System.out.println("INFO VENTAS");
                                     solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud);
+                                    consultasDistribuidora(solicitud, 55500);
                                 }
-                                else if(opcionTres == 2){
+                                else if(opcionDosStgo == 2){
                                     solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud);
+                                    consultasDistribuidora(solicitud, 55500);
                                     System.out.println("INFO SURTIDORES");
                                 }
                             }
                         }
-                    }
+                    } break;
                 case 2:
-                    System.out.println("La estación de servicio Curicó se encuentra en construcción.");
-                    break;
+                    int opcionCco = 1;
+                    while(opcionCco != 0)
+                    {
+                        System.out.println("-MENÚ Estación de Servicio Curicó-\n" +
+                                "1) Cambiar precio del combustible\n" +
+                                "2) Solicitar información\n" +
+                                "0) Volver al Menú Principal");
+                        
+                        System.out.println("Ingrese su opción: ");
+                        opcionCco = s.nextInt();
+
+                        while(opcionCco < 0 || opcionCco > 2)
+                        {
+                            System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                            opcionCco = s.nextInt();
+                        }
+                        
+                        if(opcionCco == 1)
+                        {
+                            int opcionUnoCco = 1;
+                            while(opcionUnoCco != 0)
+                            {
+                                System.out.println("- MENÚ Estación de Servicio Curicó - CAMBIO DE PRECIOS\n" +
+                                        "1) Cambiar precio del combustible 93\n" +
+                                        "2) Cambiar precio del combustible 95\n" +
+                                        "3) Cambiar precio del combustible 97\n" +
+                                        "4) Cambiar precio del combustible Diesel\n" +
+                                        "5) Cambiar precio del combustible Kerosene\n" +
+                                        "0) Volver al Menú Estación de Servicio Curicó");
+
+                                System.out.println("Ingrese su opción: ");
+                                opcionUnoCco = s.nextInt();
+                                while(opcionUnoCco < 0 || opcionUnoCco > 5)
+                                {
+                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                                    opcionUnoCco = s.nextInt();
+                                }
+
+                                int nuevoPrecio = 0;
+                                if(opcionUnoCco != 0)
+                                {
+                                    System.out.println("Ingrese el nuevo precio: ");
+                                    nuevoPrecio = s.nextInt();
+                                }
+                                
+                                /////
+                                menuCombustible(nuevoPrecio,opcionUnoCco, 45500);
+                                /////
+                            } break;
+                        }
+                        else if(opcionCco == 2)
+                        {
+                            int opcionDosCco = 1;
+                            String solicitud;
+                            while(opcionDosCco != 0)
+                            {
+                                System.out.println("- MENÚ Estación de Servicio Curicó - INFORMACIÓN\n" +
+                                        "1) Solicitar información de Ventas\n" +
+                                        "2) Solicitar información de Surtidores\n" +
+                                        "0) Volver al Menú Estación de Servicio Curicó");
+
+                                System.out.println("Ingrese su opción: ");
+                                opcionDosCco = s.nextInt();
+                                while(opcionDosCco < 0 || opcionDosCco > 2)
+                                {
+                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                                    opcionDosCco = s.nextInt();
+                                }
+                                
+                                if(opcionDosCco == 1)
+                                {
+                                    System.out.println("INFO VENTAS");
+                                    solicitud = "Informacion-Ventas";
+                                    consultasDistribuidora(solicitud, 45500);
+                                }
+                                else if(opcionDosCco == 2){
+                                    solicitud = "Informacion-Surtidores";
+                                    consultasDistribuidora(solicitud, 45500);
+                                    System.out.println("INFO SURTIDORES");
+                                }
+                            }
+                        }
+                    } break;
                 case 3:
-                    System.out.println("La estación de servicio Talca se encuentra en construcción.");
-                    break;
+                    int opcionTalca = 1;
+                    while(opcionTalca != 0)
+                    {
+                        System.out.println("-MENÚ Estación de Servicio Talca-\n" +
+                                "1) Cambiar precio del combustible\n" +
+                                "2) Solicitar información\n" +
+                                "0) Volver al Menú Principal");
+                        
+                        System.out.println("Ingrese su opción: ");
+                        opcionTalca = s.nextInt();
+
+                        while(opcionTalca < 0 || opcionTalca > 2)
+                        {
+                            System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                            opcionTalca = s.nextInt();
+                        }
+                        
+                        if(opcionTalca == 1)
+                        {
+                            int opcionUnoTalca = 1;
+                            while(opcionUnoTalca != 0)
+                            {
+                                System.out.println("- MENÚ Estación de Servicio Talca - CAMBIO DE PRECIOS\n" +
+                                        "1) Cambiar precio del combustible 93\n" +
+                                        "2) Cambiar precio del combustible 95\n" +
+                                        "3) Cambiar precio del combustible 97\n" +
+                                        "4) Cambiar precio del combustible Diesel\n" +
+                                        "5) Cambiar precio del combustible Kerosene\n" +
+                                        "0) Volver al Menú Estación de Servicio Talca");
+
+                                System.out.println("Ingrese su opción: ");
+                                opcionUnoTalca = s.nextInt();
+                                while(opcionUnoTalca < 0 || opcionUnoTalca > 5)
+                                {
+                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                                    opcionUnoTalca = s.nextInt();
+                                }
+
+                                int nuevoPrecio = 0;
+                                if(opcionUnoTalca != 0)
+                                {
+                                    System.out.println("Ingrese el nuevo precio: ");
+                                    nuevoPrecio = s.nextInt();
+                                }
+                                
+                                /////
+                                menuCombustible(nuevoPrecio,opcionUnoTalca, 35500);
+                                /////
+                            } break;
+                        }
+                        else if(opcionTalca == 2)
+                        {
+                            int opcionDosTalca= 1;
+                            String solicitud;
+                            while(opcionDosTalca != 0)
+                            {
+                                System.out.println("- MENÚ Estación de Servicio Talca - INFORMACIÓN\n" +
+                                        "1) Solicitar información de Ventas\n" +
+                                        "2) Solicitar información de Surtidores\n" +
+                                        "0) Volver al Menú Estación de Servicio Talca");
+
+                                System.out.println("Ingrese su opción: ");
+                                opcionDosTalca = s.nextInt();
+                                while(opcionDosTalca < 0 || opcionDosTalca > 2)
+                                {
+                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
+                                    opcionDosTalca = s.nextInt();
+                                }
+                                
+                                if(opcionDosTalca == 1)
+                                {
+                                    System.out.println("INFO VENTAS");
+                                    solicitud = "Informacion-Ventas";
+                                    consultasDistribuidora(solicitud, 35500);
+                                }
+                                else if(opcionDosTalca == 2){
+                                    solicitud = "Informacion-Surtidores";
+                                    consultasDistribuidora(solicitud, 35500);
+                                    System.out.println("INFO SURTIDORES");
+                                }
+                            }
+                        }
+                    } break;
                 default:
                     break;
             }
@@ -181,15 +312,15 @@ public class EmpresaCombustible {
     } 
     
     /*HACER UN WHILE PARA QUE SIEMPRE ESTÉ ESCUCHANDO LO QUE PASA EN EL MENÚ DE LA EMPRESA*/
-    public static void consultasDistribuidora(String solicitud)
+    public static void consultasDistribuidora(String solicitud, int puerto)
     {
         final String host = "localhost";
-        final int puerto = 55500;
+        final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
 
         try {
-            Socket socket = new Socket(host, puerto);
+            Socket socket = new Socket(host, puertoF);
             output = new DataOutputStream(socket.getOutputStream());
             
             output.writeUTF(solicitud);
@@ -234,6 +365,44 @@ public class EmpresaCombustible {
         } catch (IOException ex) {
             Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
         }   
+    }
+    
+    public static void menuCombustible(int nuevoPrecio, int opcionDos, int puerto){
+        String solicitud;
+        switch (opcionDos) {
+            case 1:
+                {
+                    solicitud = "Cambio precio-93-"+nuevoPrecio;
+                    consultasDistribuidora(solicitud, puerto);
+                    break;
+                }
+            case 2:
+                {
+                    solicitud = "Cambio precio-95-"+nuevoPrecio;
+                    consultasDistribuidora(solicitud, puerto);
+                    break;
+                }
+            case 3:
+                {
+                    solicitud = "Cambio precio-97-"+nuevoPrecio;
+                    consultasDistribuidora(solicitud, puerto);
+                    break;
+                }
+            case 4:
+                {
+                    solicitud = "Cambio precio-Diesel-"+nuevoPrecio;
+                    consultasDistribuidora(solicitud, puerto);
+                    break;
+                }
+            case 5:
+                {
+                    solicitud = "Cambio precio-Kerosene-"+nuevoPrecio;
+                    consultasDistribuidora(solicitud, puerto);
+                    break;
+                }
+            default:
+            break;
+        }
     }
     
     public static String fechaActual()
