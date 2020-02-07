@@ -133,7 +133,7 @@ public class EstacionServicio
                 precio97 = informacion.getInt("precio97");
                 precioDiesel = informacion.getInt("precioDiesel");
                 precioKerosene = informacion.getInt("precioKerosene");
-                System.out.println("factor: "+factorUtilidad);
+                //System.out.println("FactorUtilidad: "+factorUtilidad);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +165,7 @@ public class EstacionServicio
         factorUtilidad = factor;
         String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
                 +" WHERE nombre = '"+nombre+"'";
-        System.out.println(consultaSQL);
+        //System.out.println(consultaSQL);
         int respuesta = conexion.consultaModificar(consultaSQL);
         if(respuesta > 0){
             System.out.println("Cambio de factor de utilidad realizado con éxito!");
