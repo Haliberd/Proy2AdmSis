@@ -186,6 +186,7 @@ public class EstacionServicio
                 Scanner s = new Scanner(System.in);
                 System.out.println("-MENÚ-\n" +
                         "1)Cambiar Factor de Utilidad\n" +
+                        "2)Cargar Combustible\n" +
                         "0)Salir\n" +
                         "Ingrese su opción: ");
 
@@ -196,6 +197,27 @@ public class EstacionServicio
                     System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
                     double factor = s.nextDouble();
                     modificarFactorUtilidad(factor);
+                }
+                else if(opcion == 2){
+                    s = new Scanner(System.in);
+                    String resultado = "";
+                    while(resultado.length() == 0){
+                        try{
+                            String tipo = tipoCombustible();
+                            System.out.println("Ingrese la cantidad de combustible a cargar(ingrese -1 para volver al menu anterior)");
+                            resultado = s.nextLine();
+                            if(Integer.parseInt(resultado) >= 0){
+                                consultaCargarCombustible(tipo, Integer.parseInt(resultado));}
+                            else if(Integer.parseInt(resultado) == -1){}
+                            else{
+                                throw new Exception("Numero negativo invalido");
+                            }
+                        }
+                        catch (Exception e){
+                            System.out.println("Por favor, ingrese un numero valido");
+                            resultado = "";
+                        }
+                    }
                 }
             }
         }
@@ -394,6 +416,59 @@ public class EstacionServicio
         else{
             System.out.println("Ha fracasado la modificación!");
         }
+    }
+    
+    public void consultaCargarCombustible(String tipo, int cantidad){
+        String consultaSQL = "UPDATE Surtidor SET LitrosDisponibles = " + cantidad +
+                "WHERE tipo = '" + tipo + "'";
+        int respuesta = conexion.consultaModificar(consultaSQL);
+        if(respuesta > 0){
+            System.out.println("Carga de combustible realizada con éxito!");
+        }
+        else{
+            System.out.println("Ha fracasado la modificación!");
+        }
+    }
+    
+    public static String tipoCombustible(){
+        Scanner scanner = new Scanner(System.in);
+        String bandera = "-1";
+        while (bandera.compareTo("93") != 0 && bandera.compareTo("95") != 0 && bandera.compareTo("97") != 0 
+                && bandera.compareTo("petroleo") != 0 && bandera.compareTo("kerosene") != 0 && bandera.compareTo("0") != 1){
+            System.out.println("\nBienvenido al distribuidor de combustible\n"
+                    + "Ingrese una opcion correspondiente al tipo de combustible a distribuir:\n"
+                    + "1) 93\n"
+                    + "2) 95\n"
+                    + "3) 97\n"
+                    + "4) petroleo\n"
+                    + "5) kerosene\n"
+                    + "0) Salir\n"
+                    + "Ingrese su opcion: ");
+            bandera = scanner.nextLine();
+            switch(bandera){
+                case "1":
+                    bandera = "93";
+                    break;
+                case "2":
+                    bandera = "95";
+                    break;
+                case "3":
+                    bandera = "97";
+                    break;
+                case "4":
+                    bandera = "petroleo";
+                    break;
+                case "5":
+                    bandera = "kerosene";
+                    break;
+                case "0":
+                    break;
+                default:
+                    bandera = "-1";
+                    break;
+            }
+        }
+        return bandera;
     }
     
     /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD
