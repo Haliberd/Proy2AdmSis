@@ -20,8 +20,9 @@ import java.util.Scanner;
 public class Surtidor {
     public static void main(String[] args) throws IOException{
         try {
+            int puertoSocket = Integer.parseInt(conectarAEmpresa());
             String tipo = inicio();
-            Socket socket = new Socket("localhost", 59898);
+            Socket socket = new Socket("localhost", puertoSocket);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
             String bandera = "9";
@@ -91,6 +92,36 @@ public class Surtidor {
                     bandera = "kerosene";
                     break;
                 case "0":
+                    break;
+                default:
+                    bandera = "-1";
+                    break;
+            }
+        }
+        return bandera;
+    }
+    
+    //Sirve para ingresar el tipo de combustible a utilizar.
+    public static String conectarAEmpresa(){
+        Scanner scanner = new Scanner(System.in);
+        String bandera = "-1";
+        while (bandera.compareTo("59898") != 0 && bandera.compareTo("49898") != 0 && bandera.compareTo("39898") != 0){
+            System.out.println("\nBienvenido al distribuidor de combustible\n"
+                    + "Ingrese una opcion correspondiente a la empresa a conectar:\n"
+                    + "1) Santiago\n"
+                    + "2) Curico\n"
+                    + "3) Talca\n"
+                    + "Ingrese su opcion: ");
+            bandera = scanner.nextLine();
+            switch(bandera){
+                case "1":
+                    bandera = "59898";
+                    break;
+                case "2":
+                    bandera = "49898";
+                    break;
+                case "3":
+                    bandera = "39898";
                     break;
                 default:
                     bandera = "-1";
