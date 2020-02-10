@@ -105,6 +105,7 @@ create or replace function litros_disponibles(varchar(45), varchar(45), float) r
 		-- Se encarga de actualizar el precio en Surtidor si es que el precio de venta ha cambiado.
 		if precio_actual <> precio_venta then
 			update Surtidor set Precio = precio_venta where Tipo = tipo_combustible;
+			precio_actual := precio_venta;
 		end if;
 		fin := (cantidad_actual - cantidad);
 		-- Se encarga de que haya combustible disponible para cargar.
@@ -112,12 +113,12 @@ create or replace function litros_disponibles(varchar(45), varchar(45), float) r
 		if cantidad_actual <> 0 then
 			if fin < 0 then
 				update Surtidor set LitrosDisponibles = 0, LitrosConsumidos = (cantidad_cargada + cantidad_actual), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad_actual), cantidad_actual);
+				insert into Ventas values (referencia_surtidor, (precio_actual*cantidad_actual), cantidad_actual);
 				-- Devuelve la cantidad cargada de forma negativa, por razones de programacion.
 				fin := (cantidad_actual*(-1));
 			elseif fin >= 0 then
 				update Surtidor set LitrosDisponibles = fin, LitrosConsumidos = (cantidad_cargada + cantidad), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad), cantidad);
+				insert into Ventas values (referencia_surtidor, (precio_actual*cantidad), cantidad);
 				fin := cantidad;
 			end if;
 		elseif cantidad_actual = 0 then
