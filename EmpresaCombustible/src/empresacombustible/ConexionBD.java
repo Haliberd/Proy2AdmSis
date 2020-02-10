@@ -26,7 +26,6 @@ public class ConexionBD
     
     public ConexionBD(String url, String usuario, String password, String nombre)
     {
-        
         this.url = url;
         this.usuario = usuario;
         this.password = password;

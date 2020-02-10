@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,12 +27,8 @@ import java.util.logging.Logger;
 public class EstacionServicio 
 {
     private static String nombre, url, usuario, password;
-    private static int puertoServidorEmpresa;
-    private static int puertoServidorSurtidores;
-    //private Runnable TCliente;
-    private Runnable TServidor;
-    private Runnable TLocal;
-    private Runnable TRecibidor;
+    private static int puertoServidorEmpresa, puertoServidorSurtidores;
+    private Runnable TServidor, TLocal, TRecibidor;
     private static int precio93, precio95, precio97, precioDiesel, precioKerosene;
     private static double factorUtilidad;
     private static ConexionBD conexion;
@@ -63,61 +60,77 @@ public class EstacionServicio
     
     public static void main(String[] args)
     {
-        
-        int opcion = 1;
-        boolean inicioEstacion = false;
-        while((opcion != 0) && (inicioEstacion == false))
-        {
-            System.out.println("- BIENVENIDOS -\n" + 
-                    "1) EJECUTAR Estación de Servicio Santiago\n" +
-                    "2) EJECUTAR Estación de Servicio Curicó\n" +
-                    "3) EJECUTAR Estación de Servicio Talca\n" +
-                    "0) Salir\n" +
-                    "Ingrese su opción: ");
-            Scanner s = new Scanner(System.in);
-            opcion = s.nextInt();
-            String nombre, url, usuario, password;
-            int puertoEmpresa, puertoSurtidores;
-            switch (opcion) {
-                case 1:
-                    nombre = "Santiago";
-                    url = "jdbc:postgresql://localhost:5432/BDSantiago";
-                    usuario = "postgres";
-                    password = "1234";
-                    puertoEmpresa = 55500;
-                    puertoSurtidores = 59898;
-                    EstacionServicio Santiago = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
-                    System.out.println("Iniciando Estacion de Servicio Santiago...");
-                    consultaFactorPrecios();
-                    inicioEstacion = true;
-                    break;
-                case 2:
-                    nombre = "Curico";
-                    url = "jdbc:postgresql://localhost:5432/BDCurico";
-                    usuario = "postgres";
-                    password = "1234";
-                    puertoEmpresa = 45500;
-                    puertoSurtidores = 49898;
-                    EstacionServicio Curico = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
-                    System.out.println("Iniciando Estacion de Servicio Curicó...");
-                    consultaFactorPrecios();
-                    inicioEstacion = true;
-                    break;
-                case 3:
-                    nombre = "Talca";
-                    url = "jdbc:postgresql://localhost:5432/BDTalca";
-                    usuario = "postgres";
-                    password = "1234";
-                    puertoEmpresa = 35500;
-                    puertoSurtidores = 39898;
-                    EstacionServicio Talca = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
-                    System.out.println("Iniciando Estacion de Servicio Talca...");
-                    consultaFactorPrecios();
-                    inicioEstacion = true;
-                    break;
-                default:
-                    break;
+        try {
+            int opcion = -1;
+            boolean inicioEstacion = false;
+            while((opcion != 0) && (inicioEstacion == false))
+            {
+                System.out.println("- BIENVENIDOS -\n" + 
+                        "1) EJECUTAR Estación de Servicio Santiago\n" +
+                        "2) EJECUTAR Estación de Servicio Curicó\n" +
+                        "3) EJECUTAR Estación de Servicio Talca\n" +
+                        "0) Salir\n" +
+                        "Ingrese su opción: ");
+                Scanner s = new Scanner(System.in);
+                
+                try {
+                    opcion = s.nextInt();
+                } catch (InputMismatchException e) {
+                    System.out.println("Opción ingresada no válida.");
+                    s = new Scanner(System.in);
+                }
+                
+                String nombre, url, usuario, password;
+                int puertoEmpresa, puertoSurtidores;
+                switch (opcion) {
+                    case 1:
+                    {
+                        nombre = "Santiago";
+                        url = "jdbc:postgresql://localhost:5432/BDSantiago";
+                        usuario = "postgres";
+                        password = "1234";
+                        puertoEmpresa = 55500;
+                        puertoSurtidores = 59898;
+                        EstacionServicio Santiago = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                        System.out.println("Iniciando Estacion de Servicio Santiago...");
+                        consultaFactorPrecios();
+                        inicioEstacion = true;
+                        break;
+                    }
+                    case 2:
+                    {
+                        nombre = "Curico";
+                        url = "jdbc:postgresql://localhost:5432/BDCurico";
+                        usuario = "postgres";
+                        password = "1234";
+                        puertoEmpresa = 45500;
+                        puertoSurtidores = 49898;
+                        EstacionServicio Curico = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                        System.out.println("Iniciando Estacion de Servicio Curicó...");
+                        consultaFactorPrecios();
+                        inicioEstacion = true;
+                        break;
+                    }
+                    case 3:
+                    {
+                        nombre = "Talca";
+                        url = "jdbc:postgresql://localhost:5432/BDTalca";
+                        usuario = "postgres";
+                        password = "1234";
+                        puertoEmpresa = 35500;
+                        puertoSurtidores = 39898;
+                        EstacionServicio Talca = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
+                        System.out.println("Iniciando Estacion de Servicio Talca...");
+                        consultaFactorPrecios();
+                        inicioEstacion = true;
+                        break;
+                    }
+                    default:
+                        break;
+                }
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Valor ingresado no es válido.");
         }
     }
 
@@ -125,55 +138,77 @@ public class EstacionServicio
         
         @Override
         public void run() {
-            int opcion = 1;
-            while(opcion != 0)
-            {
-                Scanner s = new Scanner(System.in);
-                System.out.println("-MENÚ-\n" +
-                        "1)Cambiar Factor de Utilidad\n" +
-                        "2)Cargar Combustible\n" +
-                        "0)Salir\n" +
-                        "Ingrese su opción: ");
-
-                opcion = s.nextInt();
-                if(opcion == 1)
+            
+            try {
+                int opcion = -1;
+                while(opcion != 0)
                 {
-                    s = new Scanner(System.in);
-                    System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
-                    double factor = s.nextDouble();
-                    consultaModificarFactorUtilidad(factor);
-                }
-                else if(opcion == 2){
-                    s = new Scanner(System.in);
-                    String resultado = "";
-                    while(resultado.length() == 0){
-                        try{
-                            String tipo = tipoCombustible();
-                            System.out.println("Ingrese la cantidad de combustible a cargar(ingrese -1 para volver al menu anterior)");
-                            resultado = s.nextLine();
-                            if(Integer.parseInt(resultado) >= 0){
-                                consultaCargarCombustible(tipo, Integer.parseInt(resultado));}
-                            else if(Integer.parseInt(resultado) == -1){}
-                            else{
-                                throw new Exception("Numero negativo invalido");
+                    Scanner s = new Scanner(System.in);
+                    System.out.println("-MENÚ-\n" +
+                            "1)Cambiar Factor de Utilidad\n" +
+                            "2)Cargar Combustible\n" +
+                            "0)Salir\n" +
+                            "Ingrese su opción: ");
+
+                    try {
+                        opcion = s.nextInt();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Opción ingresada no válida.");
+                        s = new Scanner(System.in);
+                    }
+
+                    switch(opcion)
+                    {
+                        case 1:
+                        {
+                            s = new Scanner(System.in);
+                            System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
+
+                            try {
+                                double factor = s.nextDouble();
+                                consultaModificarFactorUtilidad(factor);
+                            } catch (InputMismatchException e) {
+                                System.out.println("Valor ingresado no es válido.");
+                                s = new Scanner(System.in);
                             }
+                            break;
                         }
-                        catch (Exception e){
-                            System.out.println("Por favor, ingrese un numero valido");
-                            resultado = "";
+                        case 2:
+                        {
+                            s = new Scanner(System.in);
+                            String resultado = "";
+                            while(resultado.length() == 0){
+                                try{
+                                    String tipo = tipoCombustible();
+                                    System.out.println("Ingrese la cantidad de combustible a cargar(ingrese -1 para volver al menu anterior)");
+                                    resultado = s.nextLine();
+                                    if(Integer.parseInt(resultado) >= 0){
+                                        consultaCargarCombustible(tipo, Integer.parseInt(resultado));}
+                                    else if(Integer.parseInt(resultado) == -1){}
+                                    else{
+                                        throw new Exception("Numero negativo inválido");
+                                    }
+                                }
+                                catch (Exception e){
+                                    System.out.println("Por favor, ingrese un número válido");
+                                    resultado = "";
+                                }
+                            }
+                            break;
                         }
                     }
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("Valor ingresado no es válido.");
             }
-        }
-        
+        }      
     }
     
     class ThreadRecibidor implements Runnable{
 
         @Override
-        public void run() {
-            
+        public void run() 
+        {
             try (ServerSocket listener = new ServerSocket(puertoServidorSurtidores))
             {
                 ExecutorService pool = Executors.newFixedThreadPool(6);
@@ -184,20 +219,21 @@ public class EstacionServicio
             } catch (IOException ex) {
                 Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
             }
-         
         }
     }
     
-    class ListenerSurtidor implements Runnable{
-
+    class ListenerSurtidor implements Runnable
+    {
         private Socket socket;
 
-        ListenerSurtidor(Socket socket) {
+        ListenerSurtidor(Socket socket)
+        {
             this.socket = socket;
         }
 
         @Override
-        public void run() {
+        public void run()
+        {
             //System.out.println("Connected: " + socket);
             String bandera = "9";
             try {
@@ -397,7 +433,7 @@ public class EstacionServicio
         while (bandera.compareTo("93") != 0 && bandera.compareTo("95") != 0 && bandera.compareTo("97") != 0 
                 && bandera.compareTo("petroleo") != 0 && bandera.compareTo("kerosene") != 0 && bandera.compareTo("0") != 1){
             System.out.println("\nBienvenido al distribuidor de combustible\n"
-                    + "Ingrese una opcion correspondiente al tipo de combustible a distribuir:\n"
+                    + "Ingrese una opción correspondiente al tipo de combustible a distribuir:\n"
                     + "1) 93\n"
                     + "2) 95\n"
                     + "3) 97\n"

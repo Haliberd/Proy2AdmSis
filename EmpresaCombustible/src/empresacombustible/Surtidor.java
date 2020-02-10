@@ -11,12 +11,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-
-
 /**
  *
  * @author Maximo Hernandez
  */
+
 public class Surtidor {
     public static void main(String[] args) throws IOException{
         try {
@@ -50,13 +49,11 @@ public class Surtidor {
                         
                     }
                 }
-                
             }
             dataoutput.writeUTF("0");
         }catch(Exception e){
                 
         }
-        
     }
     
     //Sirve para ingresar el tipo de combustible a utilizar.
@@ -70,8 +67,8 @@ public class Surtidor {
                     + "1) 93\n"
                     + "2) 95\n"
                     + "3) 97\n"
-                    + "4) petroleo\n"
-                    + "5) kerosene\n"
+                    + "4) Diesel\n"
+                    + "5) Kerosene\n"
                     + "0) Salir\n"
                     + "Ingrese su opcion: ");
             bandera = scanner.nextLine();

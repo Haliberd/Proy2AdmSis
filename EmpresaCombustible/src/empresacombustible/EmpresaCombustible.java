@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,276 +26,225 @@ import java.util.logging.Logger;
 public class EmpresaCombustible {
 
     private static VistaPrincipal vistaPrincipal;
+    
     /**
      * @param args the command line arguments
-     */
-    
-    public EmpresaCombustible(){}
+    */
     
     public static void main(String[] args)
     {
         vistaPrincipal = new VistaPrincipal();
         vistaPrincipal.setLocationRelativeTo(null);
         vistaPrincipal.setVisible(true);
-       
-        //FALTA HACER EL WHILE PARA COMPROBAR SI LA OPCIÓN INGRESADA POR EL USUARIO ES VÁLIDA
-        int opcion = 1;
-        while(opcion != 0)
-        {
-            System.out.println("-MENÚ-\n" + 
-                    "1) Estación de Servicio Santiago\n" +
-                    "2) Estación de Servicio Curicó\n" +
-                    "3) Estación de Servicio Talca\n" +
-                    "0) Salir\n" +
-                    "Ingrese su opción: ");
-            Scanner s = new Scanner(System.in);
-            opcion = s.nextInt();
-            
-            switch (opcion) {
-                case 1:
-                    int opcionStgo = 1;
-                    while(opcionStgo != 0)
+               
+        try {
+            int opcion = -1;
+            while(opcion != 0)
+            {
+                Scanner s = new Scanner(System.in);
+                System.out.println("-MENÚ-\n" + 
+                        "1) Estación de Servicio Santiago\n" +
+                        "2) Estación de Servicio Curicó\n" +
+                        "3) Estación de Servicio Talca\n" +
+                        "0) Salir\n" +
+                        "Ingrese su opción: ");
+
+                try {
+                    opcion = s.nextInt(); 
+                } catch (InputMismatchException e) {
+                    System.out.println("Opción ingresada no válida.");
+                }
+
+                switch (opcion)
+                {
+                    case 1:
                     {
-                        System.out.println("-MENÚ Estación de Servicio Santiago-\n" +
-                                "1) Cambiar precio del combustible\n" +
-                                "2) Solicitar información\n" +
-                                "0) Volver al Menú Principal");
-                        
-                        System.out.println("Ingrese su opción: ");
-                        opcionStgo = s.nextInt();
+                        int opcionStgo = -1;
+                        while(opcionStgo != 0)
+                        {
+                            menuEstacion("Santiago");
 
-                        while(opcionStgo < 0 || opcionStgo > 2)
-                        {
-                            System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                            opcionStgo = s.nextInt();
-                        }
-                        
-                        if(opcionStgo == 1)
-                        {
-                            int opcionUnoStgo = 1;
-                            while(opcionUnoStgo != 0)
+                            try {
+                                opcionStgo = s.nextInt();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Opción ingresada no válida.");
+                                s = new Scanner(System.in);
+                            }
+
+                            switch(opcionStgo)
                             {
-                                menuCombustibles("Santiago");
+                                case 1:
+                                {
+                                    int opcionUnoStgo = -1;
+                                    while(opcionUnoStgo != 0)
+                                    {
+                                        menuCombustibles("Santiago");
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionUnoStgo = s.nextInt();
-                                while(opcionUnoStgo < 0 || opcionUnoStgo > 5)
-                                {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionUnoStgo = s.nextInt();
-                                }
+                                        int nuevoPrecio = 0;
+                                        try {
+                                            opcionUnoStgo = s.nextInt();
 
-                                int nuevoPrecio = 0;
-                                if(opcionUnoStgo != 0)
-                                {
-                                    System.out.println("Ingrese el nuevo precio: ");
-                                    nuevoPrecio = s.nextInt();
+                                            if(opcionUnoStgo != 0)
+                                            {
+                                                System.out.println("Ingrese el nuevo precio: ");
+                                                nuevoPrecio = s.nextInt();
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
+                                        
+                                        switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
+                                    } break;
                                 }
-                                
-                                /////
-                                switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
-                                /////
-                            } 
-                        }
-                        else if(opcionStgo == 2)
-                        {
-                            int opcionDosStgo = 1;
-                            String solicitud;
-                            while(opcionDosStgo != 0)
-                            {
-                                System.out.println("- MENÚ Estación de Servicio Santiago - INFORMACIÓN\n" +
-                                        "1) Solicitar información de Ventas\n" +
-                                        "2) Solicitar información de Surtidores\n" +
-                                        "0) Volver al Menú Estación de Servicio Santiago");
+                                case 2:
+                                {
+                                    int opcionDosStgo = -1;
+                                    while(opcionDosStgo != 0)
+                                    {
+                                        menuInformacion("Santiago");
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionDosStgo = s.nextInt();
-                                while(opcionDosStgo < 0 || opcionDosStgo > 2)
-                                {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionDosStgo = s.nextInt();
-                                }
-                                
-                                if(opcionDosStgo == 1)
-                                {
-                                    System.out.println("INFO VENTAS");
-                                    solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 55500, "Santiago");
-                                }
-                                else if(opcionDosStgo == 2){
-                                    solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 55500, "Santiago");
-                                    System.out.println("INFO SURTIDORES");
+                                        try {
+                                            opcionDosStgo = s.nextInt();
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
+
+                                        switchCaseInformacion(opcionDosStgo, 55500, "Santiago");
+                                    } break;
                                 }
                             }
-                        }
-                    } break;
-                case 2:
-                    int opcionCco = 1;
-                    while(opcionCco != 0)
+                        } break;
+                    }        
+                    case 2:
                     {
-                        System.out.println("-MENÚ Estación de Servicio Curicó-\n" +
-                                "1) Cambiar precio del combustible\n" +
-                                "2) Solicitar información\n" +
-                                "0) Volver al Menú Principal");
-                        
-                        System.out.println("Ingrese su opción: ");
-                        opcionCco = s.nextInt();
-
-                        while(opcionCco < 0 || opcionCco > 2)
+                        int opcionCco = -1;
+                        while(opcionCco != 0)
                         {
-                            System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                            opcionCco = s.nextInt();
-                        }
-                        
-                        if(opcionCco == 1)
-                        {
-                            int opcionUnoCco = 1;
-                            while(opcionUnoCco != 0)
-                            {
-                                menuCombustibles("Curicó");
+                            menuEstacion("Curicó");
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionUnoCco = s.nextInt();
-                                while(opcionUnoCco < 0 || opcionUnoCco > 5)
+                            try {
+                                opcionCco = s.nextInt();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Opción ingresada no válida.");
+                                s = new Scanner(System.in);
+                            }
+                           
+                            switch(opcionCco){
+                                case 1:
                                 {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionUnoCco = s.nextInt();
-                                }
+                                    int opcionUnoCco = -1;
+                                    while(opcionUnoCco != 0)
+                                    {
+                                        menuCombustibles("Curicó");
 
-                                int nuevoPrecio = 0;
-                                if(opcionUnoCco != 0)
-                                {
-                                    System.out.println("Ingrese el nuevo precio: ");
-                                    nuevoPrecio = s.nextInt();
+                                        int nuevoPrecio = 0;
+                                        try {
+                                            opcionUnoCco = s.nextInt();
+                                            if(opcionUnoCco != 0)
+                                            {
+                                                System.out.println("Ingrese el nuevo precio: ");
+                                                nuevoPrecio = s.nextInt();
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
+                                        
+                                        switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
+                                    } break;
                                 }
-                                
-                                /////
-                                switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
-                                /////
-                            } break;
-                        }
-                        else if(opcionCco == 2)
-                        {
-                            int opcionDosCco = 1;
-                            String solicitud;
-                            while(opcionDosCco != 0)
-                            {
-                                System.out.println("- MENÚ Estación de Servicio Curicó - INFORMACIÓN\n" +
-                                        "1) Solicitar información de Ventas\n" +
-                                        "2) Solicitar información de Surtidores\n" +
-                                        "0) Volver al Menú Estación de Servicio Curicó");
+                                case 2:
+                                {
+                                    int opcionDosCco = -1;
+                                    while(opcionDosCco != 0)
+                                    {
+                                        menuInformacion("Curicó");
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionDosCco = s.nextInt();
-                                while(opcionDosCco < 0 || opcionDosCco > 2)
-                                {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionDosCco = s.nextInt();
-                                }
-                                
-                                if(opcionDosCco == 1)
-                                {
-                                    System.out.println("INFO VENTAS");
-                                    solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 45500, "Curicó");
-                                }
-                                else if(opcionDosCco == 2){
-                                    solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 45500, "Curicó");
-                                    System.out.println("INFO SURTIDORES");
+                                        try {
+                                            opcionDosCco = s.nextInt();
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
+
+                                        switchCaseInformacion(opcionDosCco, 45500, "Curicó");
+                                    } break;
                                 }
                             }
-                        }
-                    } break;
-                case 3:
-                    int opcionTalca = 1;
-                    while(opcionTalca != 0)
+                        } break;
+                    }   
+                    case 3:
                     {
-                        System.out.println("-MENÚ Estación de Servicio Talca-\n" +
-                                "1) Cambiar precio del combustible\n" +
-                                "2) Solicitar información\n" +
-                                "0) Volver al Menú Principal");
-                        
-                        System.out.println("Ingrese su opción: ");
-                        opcionTalca = s.nextInt();
-
-                        while(opcionTalca < 0 || opcionTalca > 2)
+                        int opcionTalca = -1;
+                        while(opcionTalca != 0)
                         {
-                            System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                            opcionTalca = s.nextInt();
-                        }
-                        
-                        if(opcionTalca == 1)
-                        {
-                            int opcionUnoTalca = 1;
-                            while(opcionUnoTalca != 0)
-                            {
-                                menuCombustibles("Talca");
+                            menuEstacion("Talca");
+                            
+                            try {
+                                opcionTalca = s.nextInt();
+                            } catch (InputMismatchException e) {
+                                System.out.println("Opción ingresada no válida.");
+                                s = new Scanner(System.in);
+                            }
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionUnoTalca = s.nextInt();
-                                while(opcionUnoTalca < 0 || opcionUnoTalca > 5)
+                            switch(opcionTalca){
+                                case 1:
                                 {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionUnoTalca = s.nextInt();
-                                }
+                                    int opcionUnoTalca = -1;
+                                    while(opcionUnoTalca != 0)
+                                    {
+                                        menuCombustibles("Talca");
 
-                                int nuevoPrecio = 0;
-                                if(opcionUnoTalca != 0)
-                                {
-                                    System.out.println("Ingrese el nuevo precio: ");
-                                    nuevoPrecio = s.nextInt();
-                                }
-                                
-                                /////
-                                switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
-                                /////
-                            } break;
-                        }
-                        else if(opcionTalca == 2)
-                        {
-                            int opcionDosTalca= 1;
-                            String solicitud;
-                            while(opcionDosTalca != 0)
-                            {
-                                System.out.println("- MENÚ Estación de Servicio Talca - INFORMACIÓN\n" +
-                                        "1) Solicitar información de Ventas\n" +
-                                        "2) Solicitar información de Surtidores\n" +
-                                        "0) Volver al Menú Estación de Servicio Talca");
+                                        int nuevoPrecio = 0;
+                                        try {
+                                            opcionUnoTalca = s.nextInt();
+                                            if(opcionUnoTalca != 0)
+                                            {
+                                                System.out.println("Ingrese el nuevo precio: ");
+                                                nuevoPrecio = s.nextInt();
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
 
-                                System.out.println("Ingrese su opción: ");
-                                opcionDosTalca = s.nextInt();
-                                while(opcionDosTalca < 0 || opcionDosTalca > 2)
-                                {
-                                    System.out.println("Opción no válida. Vuelva a ingresar su opción: ");
-                                    opcionDosTalca = s.nextInt();
+                                        switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
+                                    } break;
                                 }
-                                
-                                if(opcionDosTalca == 1)
+                                case 2:
                                 {
-                                    System.out.println("INFO VENTAS");
-                                    solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 35500, "Talca");
-                                }
-                                else if(opcionDosTalca == 2){
-                                    solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 35500, "Talca");
-                                    System.out.println("INFO SURTIDORES");
+                                    int opcionDosTalca= -1;
+                                    while(opcionDosTalca != 0)
+                                    {
+                                        menuInformacion("Talca");
+ 
+                                        try {
+                                            opcionDosTalca = s.nextInt();
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Opción ingresada no válida.");
+                                            s = new Scanner(System.in);
+                                        }
+                                        
+                                        switchCaseInformacion(opcionDosTalca, 35500, "Talca");
+                                    } break;
                                 }
                             }
-                        }
-                    } break;
-                default:
-                    break;
+                        } break;
+                    }
+                    default:
+                        break;
+                }
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Valor ingresado no es válido.");
         }
     } 
     
-    /*HACER UN WHILE PARA QUE SIEMPRE ESTÉ ESCUCHANDO LO QUE PASA EN EL MENÚ DE LA EMPRESA*/
     public static void consultasDistribuidora(String solicitud, int puerto, String estacionServicio)
     {
-        final String host = "25.91.140.109";
+        final String host = "localhost";
         final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
@@ -347,6 +297,15 @@ public class EmpresaCombustible {
         }   
     }
     
+    public static void menuEstacion(String nombreEstacion)
+    {
+        System.out.println("-MENÚ Estación de Servicio "+nombreEstacion+"-\n" +
+                            "1) Cambiar precio del combustible\n" +
+                            "2) Solicitar información\n" +
+                            "0) Volver al Menú Principal\n"+
+                            "Ingrese su opción: ");
+    }
+    
     public static void menuCombustibles(String nombreEstacion)
     {
         System.out.println("- MENÚ Estación de Servicio "+nombreEstacion+" - CAMBIO DE PRECIOS\n" +
@@ -355,44 +314,75 @@ public class EmpresaCombustible {
                             "3) Cambiar precio del combustible 97\n" +
                             "4) Cambiar precio del combustible Diesel\n" +
                             "5) Cambiar precio del combustible Kerosene\n" +
-                            "0) Volver al Menú Estación de Servicio "+nombreEstacion);
+                            "0) Volver al Menú Estación de Servicio "+nombreEstacion+"\n"+
+                            "Ingrese su opción: ");
     }
-    
+
     public static void switchCaseCombustible(int nuevoPrecio, int opcionDos, int puerto, String estacionServicio){
         String solicitud;
         switch (opcionDos) {
             case 1:
-                {
-                    solicitud = "Cambio precio-93-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto, estacionServicio);
-                    break;
-                }
+            {
+                solicitud = "Cambio precio-93-"+nuevoPrecio;
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
             case 2:
-                {
-                    solicitud = "Cambio precio-95-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto, estacionServicio);
-                    break;
-                }
+            {
+                solicitud = "Cambio precio-95-"+nuevoPrecio;
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
             case 3:
-                {
-                    solicitud = "Cambio precio-97-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto, estacionServicio);
-                    break;
-                }
+            {
+                solicitud = "Cambio precio-97-"+nuevoPrecio;
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
             case 4:
-                {
-                    solicitud = "Cambio precio-Diesel-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto, estacionServicio);
-                    break;
-                }
+            {
+                solicitud = "Cambio precio-Diesel-"+nuevoPrecio;
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
             case 5:
-                {
-                    solicitud = "Cambio precio-Kerosene-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto, estacionServicio);
-                    break;
-                }
+            {
+                solicitud = "Cambio precio-Kerosene-"+nuevoPrecio;
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
             default:
             break;
+        }
+    }
+    
+    public static void menuInformacion(String estacionServicio)
+    {
+        System.out.println("- MENÚ Estación de Servicio "+estacionServicio+" - INFORMACIÓN\n" +
+                            "1) Solicitar información de Ventas\n" +
+                            "2) Solicitar información de Surtidores\n" +
+                            "0) Volver al Menú Estación de Servicio "+estacionServicio+"\n"+
+                            "Ingrese su opción: ");
+    }
+    
+    public static void switchCaseInformacion(int opcion, int puerto, String estacionServicio){
+        String solicitud;
+        switch(opcion)
+        {
+            case 1:
+            {
+                System.out.println("INFO VENTAS");
+                solicitud = "Informacion-Ventas";
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                break;
+            }
+            case 2:
+            {
+                solicitud = "Informacion-Surtidores";
+                consultasDistribuidora(solicitud, puerto, estacionServicio);
+                System.out.println("INFO SURTIDORES");
+                break;
+            }
         }
     }
     
@@ -404,24 +394,4 @@ public class EmpresaCombustible {
         //System.out.println("Date Format with MM-dd-yyyy : "+fechaActual);  
         return fechaActual;
     }
-    
-    /*
-    public static int verificarInputInt(Scanner s){
-        int opcion = -1;
-        int flag = -1;
-        while(flag == -1)
-        {
-            try{
-                System.out.println("Ingrese su opción: ");
-                opcion = s.nextInt();
-                System.out.println("x");
-            }catch(InputMismatchException e){
-                System.out.println("Debes ingresar un valor numérico...");
-            }
-        }
-        finally{
-            System.out.println("Finally!!! ;) ");
-        }
-        return opcion;
-    }*/
 }

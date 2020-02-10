@@ -1,4 +1,0 @@
-|Surtidor    |Valor Total |Litros Vendidos
-|Santiago03  |17675        |25.0 
-|Santiago02  |13938        |23.0 
-|Santiago01  |50500        |100.0 
