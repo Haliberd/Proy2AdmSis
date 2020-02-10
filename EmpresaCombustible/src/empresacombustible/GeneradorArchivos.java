@@ -43,7 +43,7 @@ public class GeneradorArchivos
                 e.printStackTrace();
             }
             pw.close();
-            System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
+            //System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
             tamanoArchivo = Math.toIntExact(archivo.length());
         } catch (IOException ex) {
             Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
@@ -63,7 +63,7 @@ public class GeneradorArchivos
             PrintWriter pw = new PrintWriter(archivo);
             
             String linea = ("|EstaciónNº  |"+"Precio "+" |Litros Consumidos "+" |Litros Disponibles "+"|NºCargas"+"  |Tipo");
-            System.out.println(linea);
+            //System.out.println(linea);
             pw.println(linea);
             try {
                 while(informacion.next()){
@@ -76,14 +76,13 @@ public class GeneradorArchivos
                     linea = "|"+nombre+"  |"+precio+"     |"+litrosConsumidos+
                             "                |"+litrosDisponibles+
                             "             |"+cargas+"         |"+tipo;
-                    System.out.println(linea);
                     pw.println(linea);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             pw.close();
-            System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
+            //System.out.println("Archivo creado con éxito. El tamaño del archivo es: "+archivo.length());
             tamanoArchivo = Math.toIntExact(archivo.length());
         } catch (IOException ex) {
             Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);

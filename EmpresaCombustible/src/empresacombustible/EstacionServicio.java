@@ -88,7 +88,7 @@ public class EstacionServicio
                     puertoSurtidores = 59898;
                     EstacionServicio Santiago = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
                     System.out.println("Iniciando Estacion de Servicio Santiago...");
-                    obtenerFactoryPrecios();
+                    consultaFactorPrecios();
                     inicioEstacion = true;
                     break;
                 case 2:
@@ -100,7 +100,7 @@ public class EstacionServicio
                     puertoSurtidores = 49898;
                     EstacionServicio Curico = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
                     System.out.println("Iniciando Estacion de Servicio Curicó...");
-                    obtenerFactoryPrecios();
+                    consultaFactorPrecios();
                     inicioEstacion = true;
                     break;
                 case 3:
@@ -112,7 +112,7 @@ public class EstacionServicio
                     puertoSurtidores = 39898;
                     EstacionServicio Talca = new EstacionServicio(nombre, url, usuario, password, puertoEmpresa, puertoSurtidores);
                     System.out.println("Iniciando Estacion de Servicio Talca...");
-                    obtenerFactoryPrecios();
+                    consultaFactorPrecios();
                     inicioEstacion = true;
                     break;
                 default:
@@ -120,62 +120,7 @@ public class EstacionServicio
             }
         }
     }
-    
-    public static void obtenerFactoryPrecios(){
-        String consultaSQL = "SELECT factorutilidad, precio93, precio95, precio97, preciodiesel, preciokerosene FROM estaciondeservicio"
-                + " WHERE nombre = '"+nombre+"'";
-        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
-        try {
-            while(informacion.next()){
-                factorUtilidad = informacion.getDouble("factorutilidad");
-                precio93 = informacion.getInt("precio93");
-                precio95 = informacion.getInt("precio95");
-                precio97 = informacion.getInt("precio97");
-                precioDiesel = informacion.getInt("precioDiesel");
-                precioKerosene = informacion.getInt("precioKerosene");
-                //System.out.println("FactorUtilidad: "+factorUtilidad);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-            
-    
-    public static int solicitarInfoVentas()
-    {
-        String consultaSQL = "SELECT refsurtidor as Surtidor, sum(precio) AS valorTotal, sum(litros) as litrosVendidos FROM Ventas "+
-                            "GROUP BY refsurtidor";
-        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
-        
-        int tamanoArchivo = generador.generarInfoVentas(informacion);
-        return tamanoArchivo;
-    }
-    
-    public static int solicitarInfoSurtidores()
-    {
-        String consultaSQL = "SELECT nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas FROM Surtidor";
-        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
-        
-        int tamanoArchivo = generador.generarInfoSurtidores(informacion);
-        return tamanoArchivo;
-    }
 
-    public static void modificarFactorUtilidad(double factor)
-    {
-        factorUtilidad = factor;
-        String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
-                +" WHERE nombre = '"+nombre+"'";
-        //System.out.println(consultaSQL);
-        int respuesta = conexion.consultaModificar(consultaSQL);
-        if(respuesta > 0){
-            System.out.println("Cambio de factor de utilidad realizado con éxito!");
-            aplicarFactorUtilidad();
-        }
-        else{
-            System.out.println("Ha fracasado la modificación!");
-        }
-    }
-    
     class ThreadLocal implements Runnable{
         
         @Override
@@ -195,7 +140,7 @@ public class EstacionServicio
                     s = new Scanner(System.in);
                     System.out.println("Ingrese el nuevo factor de utilidad (incluyendo decimales, por ejemplo: 0,01): ");
                     double factor = s.nextDouble();
-                    modificarFactorUtilidad(factor);
+                    consultaModificarFactorUtilidad(factor);
                 }
             }
         }
@@ -287,7 +232,7 @@ public class EstacionServicio
                         {
                             DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
                             byte[] b;
-                            int tamanoArchivo = solicitarInfoVentas();
+                            int tamanoArchivo = consultaInfoVentas();
                             msje.writeUTF(Integer.toString(tamanoArchivo));
                             FileInputStream archivo = new FileInputStream("informacion_Ventas.txt");
                             b = new byte[tamanoArchivo];
@@ -299,7 +244,7 @@ public class EstacionServicio
                         {
                             DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
                             byte[] b;
-                            int tamanoArchivo = solicitarInfoSurtidores();
+                            int tamanoArchivo = consultaInfoSurtidores();
                             msje.writeUTF(Integer.toString(tamanoArchivo));
                             FileInputStream archivo = new FileInputStream("informacion_Surtidores.txt");
                             b = new byte[tamanoArchivo];
@@ -396,9 +341,25 @@ public class EstacionServicio
         }
     }
     
+    public static void consultaModificarFactorUtilidad(double factor)
+    {
+        factorUtilidad = factor;
+        String consultaSQL = "UPDATE EstacionDeServicio SET factorUtilidad = "+factorUtilidad
+                +" WHERE nombre = '"+nombre+"'";
+        //System.out.println(consultaSQL);
+        int respuesta = conexion.consultaModificar(consultaSQL);
+        if(respuesta > 0){
+            System.out.println("Cambio de factor de utilidad realizado con éxito!");
+            consultaAplicarFactorUtilidad();
+        }
+        else{
+            System.out.println("Ha fracasado la modificación!");
+        }
+    }
+    
     /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD
     , pues al volver a cargar la BD volvería a aplicar el factor de utilidad a los precios*/
-    public static void aplicarFactorUtilidad()
+    public static void consultaAplicarFactorUtilidad()
     {
         precio93 = precio93 + (int)(precio93 * factorUtilidad);
         precio95 = precio95 + (int)(precio95 * factorUtilidad);
@@ -420,5 +381,43 @@ public class EstacionServicio
         else{
             System.out.println("No se ha podido aplicar el factor de utilidad a los precios!");
         }
+    }
+        
+    public static void consultaFactorPrecios(){
+        String consultaSQL = "SELECT factorutilidad, precio93, precio95, precio97, preciodiesel, preciokerosene FROM estaciondeservicio"
+                + " WHERE nombre = '"+nombre+"'";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        try {
+            while(informacion.next()){
+                factorUtilidad = informacion.getDouble("factorutilidad");
+                precio93 = informacion.getInt("precio93");
+                precio95 = informacion.getInt("precio95");
+                precio97 = informacion.getInt("precio97");
+                precioDiesel = informacion.getInt("precioDiesel");
+                precioKerosene = informacion.getInt("precioKerosene");
+                //System.out.println("FactorUtilidad: "+factorUtilidad);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static int consultaInfoVentas()
+    {
+        String consultaSQL = "SELECT refsurtidor as Surtidor, sum(precio) AS valorTotal, sum(litros) as litrosVendidos FROM Ventas "+
+                            "GROUP BY refsurtidor";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        
+        int tamanoArchivo = generador.generarInfoVentas(informacion);
+        return tamanoArchivo;
+    }
+    
+    public static int consultaInfoSurtidores()
+    {
+        String consultaSQL = "SELECT nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas FROM Surtidor";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        
+        int tamanoArchivo = generador.generarInfoSurtidores(informacion);
+        return tamanoArchivo;
     }
 }

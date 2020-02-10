@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +25,6 @@ import java.util.logging.Logger;
 public class EmpresaCombustible {
 
     private static VistaPrincipal vistaPrincipal;
-    private static Thread serverEmpresa;
     /**
      * @param args the command line arguments
      */
@@ -76,13 +74,7 @@ public class EmpresaCombustible {
                             int opcionUnoStgo = 1;
                             while(opcionUnoStgo != 0)
                             {
-                                System.out.println("- MENÚ Estación de Servicio Santiago - CAMBIO DE PRECIOS\n" +
-                                        "1) Cambiar precio del combustible 93\n" +
-                                        "2) Cambiar precio del combustible 95\n" +
-                                        "3) Cambiar precio del combustible 97\n" +
-                                        "4) Cambiar precio del combustible Diesel\n" +
-                                        "5) Cambiar precio del combustible Kerosene\n" +
-                                        "0) Volver al Menú Estación de Servicio Santiago");
+                                menuCombustibles("Santiago");
 
                                 System.out.println("Ingrese su opción: ");
                                 opcionUnoStgo = s.nextInt();
@@ -100,7 +92,7 @@ public class EmpresaCombustible {
                                 }
                                 
                                 /////
-                                menuCombustible(nuevoPrecio,opcionUnoStgo, 55500);
+                                switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
                                 /////
                             } 
                         }
@@ -127,11 +119,11 @@ public class EmpresaCombustible {
                                 {
                                     System.out.println("INFO VENTAS");
                                     solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 55500);
+                                    consultasDistribuidora(solicitud, 55500, "Santiago");
                                 }
                                 else if(opcionDosStgo == 2){
                                     solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 55500);
+                                    consultasDistribuidora(solicitud, 55500, "Santiago");
                                     System.out.println("INFO SURTIDORES");
                                 }
                             }
@@ -160,13 +152,7 @@ public class EmpresaCombustible {
                             int opcionUnoCco = 1;
                             while(opcionUnoCco != 0)
                             {
-                                System.out.println("- MENÚ Estación de Servicio Curicó - CAMBIO DE PRECIOS\n" +
-                                        "1) Cambiar precio del combustible 93\n" +
-                                        "2) Cambiar precio del combustible 95\n" +
-                                        "3) Cambiar precio del combustible 97\n" +
-                                        "4) Cambiar precio del combustible Diesel\n" +
-                                        "5) Cambiar precio del combustible Kerosene\n" +
-                                        "0) Volver al Menú Estación de Servicio Curicó");
+                                menuCombustibles("Curicó");
 
                                 System.out.println("Ingrese su opción: ");
                                 opcionUnoCco = s.nextInt();
@@ -184,7 +170,7 @@ public class EmpresaCombustible {
                                 }
                                 
                                 /////
-                                menuCombustible(nuevoPrecio,opcionUnoCco, 45500);
+                                switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
                                 /////
                             } break;
                         }
@@ -211,11 +197,11 @@ public class EmpresaCombustible {
                                 {
                                     System.out.println("INFO VENTAS");
                                     solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 45500);
+                                    consultasDistribuidora(solicitud, 45500, "Curicó");
                                 }
                                 else if(opcionDosCco == 2){
                                     solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 45500);
+                                    consultasDistribuidora(solicitud, 45500, "Curicó");
                                     System.out.println("INFO SURTIDORES");
                                 }
                             }
@@ -244,13 +230,7 @@ public class EmpresaCombustible {
                             int opcionUnoTalca = 1;
                             while(opcionUnoTalca != 0)
                             {
-                                System.out.println("- MENÚ Estación de Servicio Talca - CAMBIO DE PRECIOS\n" +
-                                        "1) Cambiar precio del combustible 93\n" +
-                                        "2) Cambiar precio del combustible 95\n" +
-                                        "3) Cambiar precio del combustible 97\n" +
-                                        "4) Cambiar precio del combustible Diesel\n" +
-                                        "5) Cambiar precio del combustible Kerosene\n" +
-                                        "0) Volver al Menú Estación de Servicio Talca");
+                                menuCombustibles("Talca");
 
                                 System.out.println("Ingrese su opción: ");
                                 opcionUnoTalca = s.nextInt();
@@ -268,7 +248,7 @@ public class EmpresaCombustible {
                                 }
                                 
                                 /////
-                                menuCombustible(nuevoPrecio,opcionUnoTalca, 35500);
+                                switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
                                 /////
                             } break;
                         }
@@ -295,11 +275,11 @@ public class EmpresaCombustible {
                                 {
                                     System.out.println("INFO VENTAS");
                                     solicitud = "Informacion-Ventas";
-                                    consultasDistribuidora(solicitud, 35500);
+                                    consultasDistribuidora(solicitud, 35500, "Talca");
                                 }
                                 else if(opcionDosTalca == 2){
                                     solicitud = "Informacion-Surtidores";
-                                    consultasDistribuidora(solicitud, 35500);
+                                    consultasDistribuidora(solicitud, 35500, "Talca");
                                     System.out.println("INFO SURTIDORES");
                                 }
                             }
@@ -312,9 +292,9 @@ public class EmpresaCombustible {
     } 
     
     /*HACER UN WHILE PARA QUE SIEMPRE ESTÉ ESCUCHANDO LO QUE PASA EN EL MENÚ DE LA EMPRESA*/
-    public static void consultasDistribuidora(String solicitud, int puerto)
+    public static void consultasDistribuidora(String solicitud, int puerto, String estacionServicio)
     {
-        final String host = "localhost";
+        final String host = "25.91.140.109";
         final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
@@ -339,11 +319,11 @@ public class EmpresaCombustible {
                 String nombreArchivo = "";
                 if(msjeSplit[1].equals("Ventas"))
                 {
-                    nombreArchivo = "Ventas "+fechaActual+".txt";
+                    nombreArchivo = "Ventas "+estacionServicio+" "+fechaActual+".txt";
                 }
                 else if(msjeSplit[1].equals("Surtidores"))
                 {
-                    nombreArchivo = "Surtidores "+fechaActual+".txt";
+                    nombreArchivo = "Surtidores "+estacionServicio+" "+fechaActual+".txt";
                 }
                 FileOutputStream file = new FileOutputStream(nombreArchivo);
                 inputS.read(b, 0, b.length);
@@ -367,37 +347,48 @@ public class EmpresaCombustible {
         }   
     }
     
-    public static void menuCombustible(int nuevoPrecio, int opcionDos, int puerto){
+    public static void menuCombustibles(String nombreEstacion)
+    {
+        System.out.println("- MENÚ Estación de Servicio "+nombreEstacion+" - CAMBIO DE PRECIOS\n" +
+                            "1) Cambiar precio del combustible 93\n" +
+                            "2) Cambiar precio del combustible 95\n" +
+                            "3) Cambiar precio del combustible 97\n" +
+                            "4) Cambiar precio del combustible Diesel\n" +
+                            "5) Cambiar precio del combustible Kerosene\n" +
+                            "0) Volver al Menú Estación de Servicio "+nombreEstacion);
+    }
+    
+    public static void switchCaseCombustible(int nuevoPrecio, int opcionDos, int puerto, String estacionServicio){
         String solicitud;
         switch (opcionDos) {
             case 1:
                 {
                     solicitud = "Cambio precio-93-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto);
+                    consultasDistribuidora(solicitud, puerto, estacionServicio);
                     break;
                 }
             case 2:
                 {
                     solicitud = "Cambio precio-95-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto);
+                    consultasDistribuidora(solicitud, puerto, estacionServicio);
                     break;
                 }
             case 3:
                 {
                     solicitud = "Cambio precio-97-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto);
+                    consultasDistribuidora(solicitud, puerto, estacionServicio);
                     break;
                 }
             case 4:
                 {
                     solicitud = "Cambio precio-Diesel-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto);
+                    consultasDistribuidora(solicitud, puerto, estacionServicio);
                     break;
                 }
             case 5:
                 {
                     solicitud = "Cambio precio-Kerosene-"+nuevoPrecio;
-                    consultasDistribuidora(solicitud, puerto);
+                    consultasDistribuidora(solicitud, puerto, estacionServicio);
                     break;
                 }
             default:
@@ -414,6 +405,7 @@ public class EmpresaCombustible {
         return fechaActual;
     }
     
+    /*
     public static int verificarInputInt(Scanner s){
         int opcion = -1;
         int flag = -1;
@@ -427,11 +419,9 @@ public class EmpresaCombustible {
                 System.out.println("Debes ingresar un valor numérico...");
             }
         }
-        
-        /*
         finally{
             System.out.println("Finally!!! ;) ");
-        }*/
+        }
         return opcion;
-    }
+    }*/
 }
