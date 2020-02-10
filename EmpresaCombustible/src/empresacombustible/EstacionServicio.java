@@ -34,6 +34,16 @@ public class EstacionServicio
     private static ConexionBD conexion;
     private static GeneradorArchivos generador;
   
+    /**
+     * Permite crear la conexión hacia la BD de la distribuidora
+     * Además, inicia los hilos de ejecución.
+     * @param nombreEstacion nombre de la estación de servicio.
+     * @param url URL de la base de datos de la distribuidora.
+     * @param usuario usuario de la base de datos.
+     * @param password contraseña del usuario de la BD
+     * @param puertoEmpresa puerto en el cual se conecta con la empresa.
+     * @param puertoSurtidores puerto en cual se conecta con sus surtidores.
+     */
     public EstacionServicio(String nombreEstacion, String url, String usuario, String password, int puertoEmpresa, int puertoSurtidores)
     {
         this.nombre = nombreEstacion;
@@ -58,6 +68,10 @@ public class EstacionServicio
         s.start();
     }
     
+    /**
+     * Menú de opciones que permite ejecutar la aplicación de una distribuidora.
+     * @param args 
+     */
     public static void main(String[] args)
     {
         try {
@@ -134,6 +148,10 @@ public class EstacionServicio
         }
     }
 
+    /**
+     * Es el menú de la distribuidora
+     * Permite cambiar el factor de utilidad de la misma y/o cargar combustible.
+     */
     class ThreadLocal implements Runnable{
         
         @Override
@@ -262,6 +280,12 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Thread que siempre está escuchando las posibles consultas que se pueden 
+     * efectuar desde la empresa
+     * Además, una vez recibida la consulta, envía la información solicitada hacia
+     * la empresa (Sockets TCP).
+     */
     class ListenerEmpresa implements Runnable
     {
         @Override
@@ -384,6 +408,11 @@ public class EstacionServicio
         return resultado;
     }
     
+    /**
+     * Permite modificar los precios del combustible en la BD de la distribuidora.
+     * @param combustible tipo de combustible al cual se le modificará el precio
+     * @param precio nuevo precio que se asignará al tipo de combustible.
+     */
     public void consultaCambioPrecio(String combustible, int precio)
     {  
         precio = precio + (int) (precio * factorUtilidad);
@@ -399,6 +428,10 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Permite modificar el factor de utilidad en la BD de la distribuidora.
+     * @param factor nuevo valor que se le asignará al factor de utilidad.
+     */
     public static void consultaModificarFactorUtilidad(double factor)
     {
         factorUtilidad = factor;
@@ -468,8 +501,10 @@ public class EstacionServicio
         return bandera;
     }
     
-    /* El factor de utilidad se aplica siempre que se inicia la aplicación, por ende, no es necesario hacer el cambio en la BD
-    , pues al volver a cargar la BD volvería a aplicar el factor de utilidad a los precios*/
+    /**
+     * Permite aplicar el factor de utilidad a los distintos precios de los 
+     * combustibles tanto dentro de la aplicación como en la BD de la distribuidora.
+     */
     public static void consultaAplicarFactorUtilidad()
     {
         precio93 = precio93 + (int)(precio93 * factorUtilidad);
@@ -493,7 +528,13 @@ public class EstacionServicio
             System.out.println("No se ha podido aplicar el factor de utilidad a los precios!");
         }
     }
-        
+     
+    /**
+    * Carga los distintos precios y el factor de utilidad almacenados en la BD
+    * en la aplicación de la distribuidora (se cargan en la aplicación solo para
+    * poder efectuar procesos pequeños y respuestas hacia la empresa, por ejemplo:
+    * precio actual vs nuevo precio.).
+    */
     public static void consultaFactorPrecios(){
         String consultaSQL = "SELECT factorutilidad, precio93, precio95, precio97, preciodiesel, preciokerosene FROM estaciondeservicio"
                 + " WHERE nombre = '"+nombre+"'";
@@ -513,6 +554,12 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Permite tanto generar una consulta a la BD y obtener la información 
+     * Como llamar al método para generar un archivo con la información obtenida
+     * (Reporte Ventas)
+     * @return tamaño en bytes del archivo creado.
+     */
     public static int consultaInfoVentas()
     {
         String consultaSQL = "SELECT refsurtidor as Surtidor, sum(precio) AS valorTotal, sum(litros) as litrosVendidos FROM Ventas "+
@@ -523,6 +570,12 @@ public class EstacionServicio
         return tamanoArchivo;
     }
     
+    /**
+     * Permite tanto generar una consulta a la BD y obtener la información 
+     * Como llamar al método para generar un archivo con la información obtenida
+     * (Reporte Surtidores)
+     * @return tamaño en bytes del archivo creado
+     */
     public static int consultaInfoSurtidores()
     {
         String consultaSQL = "SELECT nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas FROM Surtidor";

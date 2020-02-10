@@ -18,6 +18,13 @@ import java.util.logging.Logger;
  */
 public class GeneradorArchivos 
 {
+    /**
+     * Permite crear y escribir dentro de una archivo
+     * En este caso contiene la información de las ventas generadas en cada 
+     * surtidor de una distribuidora.
+     * @param informacion contiene la información retornada desde la BD.
+     * @return retorna el tamaño en bytes del archivo creado
+     */
     public int generarInfoVentas(ResultSet informacion)
     {
         int tamanoArchivo = 0;
@@ -51,6 +58,13 @@ public class GeneradorArchivos
         return tamanoArchivo;
     }
     
+    /**
+     * Permite crear y escribir dentro de una archivo
+     * En este caso contiene la información de los surtidores pertenecientes
+     * a una distribuidora en específico.
+     * @param informacion contiene la información retornada desde la BD.
+     * @return retorna el tamaño en bytes del archivo creado
+     */
     public int generarInfoSurtidores(ResultSet informacion)
     {
         int tamanoArchivo = 0;

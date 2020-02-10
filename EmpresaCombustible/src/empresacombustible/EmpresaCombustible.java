@@ -28,9 +28,10 @@ public class EmpresaCombustible {
     private static VistaPrincipal vistaPrincipal;
     
     /**
-     * @param args the command line arguments
+    Básicamente un menú que permite al usuario interactuar con la aplicación de 
+    la empresa, ya sea para solicitar información a las distribuidoras o modificar
+    los precios de alguna de ellas.
     */
-    
     public static void main(String[] args)
     {
         vistaPrincipal = new VistaPrincipal();
@@ -242,6 +243,14 @@ public class EmpresaCombustible {
         }
     } 
     
+    /**
+    * Permite efectuar las consultas desde la empresa hacia una distribuidora en
+    particular, mediante el uso de sockets TCP.
+    * @param solicitud consulta que se enviará hacia la distribuidora
+    * @param puerto al cual se conecta con la distribuidora
+    * @param estacionServicio nombre de la estación de servicio a la cual se 
+       conectará.
+    */
     public static void consultasDistribuidora(String solicitud, int puerto, String estacionServicio)
     {
         final String host = "localhost";
@@ -297,6 +306,16 @@ public class EmpresaCombustible {
         }   
     }
     
+    /* Todas las funciones que siguen a continuación se ubicaron dentro de una 
+    función para no repetir constantemente la misma porción de código en la 
+    sección del menú.
+    */
+    
+    /**
+    * Muestra las posibles acciones que se pueden ejecutar dentro del menú de una 
+    distribuidora.
+    * @param nombreEstacion nombre de la estación de servicio
+    */
     public static void menuEstacion(String nombreEstacion)
     {
         System.out.println("-MENÚ Estación de Servicio "+nombreEstacion+"-\n" +
@@ -306,6 +325,11 @@ public class EmpresaCombustible {
                             "Ingrese su opción: ");
     }
     
+    /**
+    * Muestra los distintos tipos de combustibles a los cuales se les puede modificar
+    su precio.
+    * @param nombreEstacion nombre de la estación de servicio
+    */
     public static void menuCombustibles(String nombreEstacion)
     {
         System.out.println("- MENÚ Estación de Servicio "+nombreEstacion+" - CAMBIO DE PRECIOS\n" +
@@ -318,9 +342,16 @@ public class EmpresaCombustible {
                             "Ingrese su opción: ");
     }
 
-    public static void switchCaseCombustible(int nuevoPrecio, int opcionDos, int puerto, String estacionServicio){
+    /**
+    * Switch-Case según el combustible que haya escogido el usuario.
+    * @param nuevoPrecio nuevo precio del combustible seleccionado en el menuCombustibles
+    * @param opcion combustible escogido disponible en el menuCombustibles
+    * @param puerto puerto de la distribuidora a la cual se va a conectar
+    * @param estacionServicio nombre de la distribuidora a la cual se va a conectar
+    */
+    public static void switchCaseCombustible(int nuevoPrecio, int opcion, int puerto, String estacionServicio){
         String solicitud;
-        switch (opcionDos) {
+        switch (opcion) {
             case 1:
             {
                 solicitud = "Cambio precio-93-"+nuevoPrecio;
@@ -356,6 +387,11 @@ public class EmpresaCombustible {
         }
     }
     
+    /**
+    * Muestra las opciones correspondientes a la información que puede solicitar
+      la empresa a una distribuidora.
+    *@param estacionServicio nombre de la estación de servicio/distribuidora
+    */
     public static void menuInformacion(String estacionServicio)
     {
         System.out.println("- MENÚ Estación de Servicio "+estacionServicio+" - INFORMACIÓN\n" +
@@ -365,6 +401,12 @@ public class EmpresaCombustible {
                             "Ingrese su opción: ");
     }
     
+    /**
+    * Switch-Case según el tipo de información solicitada a una distribuidora.
+    * @param opcion opcion que escogió el usuario del menuInformacion
+    * @param puerto puerto específico de la distribuidora a la cual se va a conectar
+    * @param estacionServicio nombre de la distribuidora a la cual se va a conectar
+    */
     public static void switchCaseInformacion(int opcion, int puerto, String estacionServicio){
         String solicitud;
         switch(opcion)
@@ -386,6 +428,11 @@ public class EmpresaCombustible {
         }
     }
     
+    /**
+    * Se utiliza para poder almacenar el archivo con la información recibida desde
+    la distribuidora con una fecha.
+    * @return fechaActual.
+    */
     public static String fechaActual()
     {
         Date date = new Date();  
