@@ -34,9 +34,9 @@ public class EmpresaCombustible {
     */
     public static void main(String[] args)
     {
-        vistaPrincipal = new VistaPrincipal();
+        /*vistaPrincipal = new VistaPrincipal();
         vistaPrincipal.setLocationRelativeTo(null);
-        vistaPrincipal.setVisible(true);
+        vistaPrincipal.setVisible(true);*/
                
         try {
             int opcion = -1;

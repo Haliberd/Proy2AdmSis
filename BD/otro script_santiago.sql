@@ -81,8 +81,14 @@ create table Ventas(
 
 alter table Ventas owner to postgres;
 
-insert into EstacionDeServicio values ('Santiago', 0.01, 400, 400, 400, 400, 400);
-insert into Surtidor values ('Hi', '93', 400, 0, 200, 0, 'Santiago');
+insert into EstacionDeServicio values ('Santiago', 0.01, 400, 400, 400, 400, 400),
+insert into Surtidor values ('Santiago_93', '93', 400, 0, 200, 0, 'Santiago'),
+							('Santiago_95', '95', 400, 0, 200, 0, 'Santiago'),
+							('Santiago_97', '97', 400, 0, 200, 0, 'Santiago'),
+							('Santiago_Diesel', 'petroleo', 400, 0, 200, 0, 'Santiago'),
+							('Santiago_Kerosene', 'kerosene', 400, 0, 200, 0, 'Santiago');
+
+
 
 create or replace function litros_disponibles(varchar(45), varchar(45), float) returns float as $$
 	declare
@@ -105,7 +111,6 @@ create or replace function litros_disponibles(varchar(45), varchar(45), float) r
 		-- Se encarga de actualizar el precio en Surtidor si es que el precio de venta ha cambiado.
 		if precio_actual <> precio_venta then
 			update Surtidor set Precio = precio_venta where Tipo = tipo_combustible;
-			precio_actual := precio_venta;
 		end if;
 		fin := (cantidad_actual - cantidad);
 		-- Se encarga de que haya combustible disponible para cargar.
@@ -113,12 +118,12 @@ create or replace function litros_disponibles(varchar(45), varchar(45), float) r
 		if cantidad_actual <> 0 then
 			if fin < 0 then
 				update Surtidor set LitrosDisponibles = 0, LitrosConsumidos = (cantidad_cargada + cantidad_actual), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, (precio_actual*cantidad_actual), cantidad_actual);
+				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad_actual), cantidad_actual);
 				-- Devuelve la cantidad cargada de forma negativa, por razones de programacion.
 				fin := (cantidad_actual*(-1));
 			elseif fin >= 0 then
 				update Surtidor set LitrosDisponibles = fin, LitrosConsumidos = (cantidad_cargada + cantidad), CargasRealizadas = (nRecargas + 1 ) where Tipo = tipo_combustible;
-				insert into Ventas values (referencia_surtidor, (precio_actual*cantidad), cantidad);
+				insert into Ventas values (referencia_surtidor, (precio_venta*cantidad), cantidad);
 				fin := cantidad;
 			end if;
 		elseif cantidad_actual = 0 then

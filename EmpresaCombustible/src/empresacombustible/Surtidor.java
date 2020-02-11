@@ -17,6 +17,12 @@ import java.util.Scanner;
  */
 
 public class Surtidor {
+
+    /**
+     * Metodo main encargado de inicializar el Surtidor, y mantener corriendo este mismo.
+     * @param args. No son necesarios.
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException{
         try {
             int puertoSocket = Integer.parseInt(conectarAEmpresa());
@@ -56,7 +62,11 @@ public class Surtidor {
         }
     }
     
-    //Sirve para ingresar el tipo de combustible a utilizar.
+
+    /**
+     * Sirve para ingresar el tipo de combustible a utilizar.
+     * @return la opcion ingresada, dentro de la variable bandera.
+     */
     public static String inicio(){
         Scanner scanner = new Scanner(System.in);
         String bandera = "-1";
@@ -98,7 +108,11 @@ public class Surtidor {
         return bandera;
     }
     
-    //Sirve para ingresar el tipo de combustible a utilizar.
+
+    /**
+     * Sirve para conectar a la estacion de servicio deseada
+     * @return El numero de puerto segun la opcion determinada.
+     */
     public static String conectarAEmpresa(){
         Scanner scanner = new Scanner(System.in);
         String bandera = "-1";
@@ -127,8 +141,11 @@ public class Surtidor {
         }
         return bandera;
     }
-    
-    //Se puede caer si se ingresa algo diferente a un numero
+
+    /**
+     * Menu de opciones
+     * @return la opcion deseada segun el menu.
+     */
     public static String menu(){
         Scanner scanner = new Scanner(System.in);
         String bandera = "9";

@@ -222,6 +222,9 @@ public class EstacionServicio
         }      
     }
     
+    /*
+    * Clase encargada de recibir las conexiones de los Surtidores y generar un Thread para estos.
+    */
     class ThreadRecibidor implements Runnable{
 
         @Override
@@ -240,6 +243,9 @@ public class EstacionServicio
         }
     }
     
+    /*
+    * Clase encargada de almacenar los movimientos de los Surtidores en la base de datos de la estacion.
+    */
     class ListenerSurtidor implements Runnable
     {
         private Socket socket;
@@ -384,6 +390,15 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Funcion encargada de asignar la columna de precio combustible correspondiente segun el tipo de combustible
+     * @param tipo hace referencia al tipo de combustible que se desea cargar
+     * @param cantidad hace referencia a la cantidad que se desea cargar
+     * @return existen 3 posibles casos, la variable cantidad si es que se pudo realizar la carga correctamente
+     *         la diferencia entre la cantidad actual de combustible y la cantidad deseada (lo cual resulta en un numero negativo)
+     *         si es que no hay suficiente combustible para realizar la carga.
+     *         0 si es que no hay combustible.
+     */
     public int consultaCargaCombustible(String tipo, String cantidad){
         String tipo_columna = "";
         switch(tipo){
@@ -448,6 +463,11 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Carga combustible a la estacion deseada.
+     * @param tipo hace referencia al tipo de combustible que se desea cargar
+     * @param cantidad hace referencia a la cantidad de combustible a cargar
+     */
     public void consultaCargarCombustible(String tipo, int cantidad){
         String consultaSQL = "UPDATE Surtidor SET LitrosDisponibles = " + cantidad +
                 "WHERE tipo = '" + tipo + "'";
@@ -460,6 +480,10 @@ public class EstacionServicio
         }
     }
     
+    /**
+     * Menu para seleccionar el tipo de combustible
+     * @return la opcion del tipo de combustible
+     */
     public static String tipoCombustible(){
         Scanner scanner = new Scanner(System.in);
         String bandera = "-1";
