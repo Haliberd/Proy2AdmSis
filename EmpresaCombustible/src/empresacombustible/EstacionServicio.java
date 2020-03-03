@@ -489,8 +489,8 @@ public class EstacionServicio
         String bandera = "-1";
         while (bandera.compareTo("93") != 0 && bandera.compareTo("95") != 0 && bandera.compareTo("97") != 0 
                 && bandera.compareTo("petroleo") != 0 && bandera.compareTo("kerosene") != 0 && bandera.compareTo("0") != 1){
-            System.out.println("\nBienvenido al distribuidor de combustible\n"
-                    + "Ingrese una opción correspondiente al tipo de combustible a distribuir:\n"
+            System.out.println("\n-Bienvenido al distribuidor de combustible-\n"
+                    + "Ingrese el surtidor al cual desea cargar combustible:\n"
                     + "1) 93\n"
                     + "2) 95\n"
                     + "3) 97\n"
