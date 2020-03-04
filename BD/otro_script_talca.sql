@@ -85,8 +85,8 @@ insert into EstacionDeServicio values ('Talca', 0.01, 400, 400, 400, 400, 400);
 insert into Surtidor values ('Talca_93', '93', 400, 0, 200, 0, 'Talca'),
 							('Talca_95', '95', 400, 0, 200, 0, 'Talca'),
 							('Talca_97', '97', 400, 0, 200, 0, 'Talca'),
-							('Talca_Diesel', 'petroleo', 400, 0, 200, 0, 'Talca'),
-							('Talca_Kerosene', 'kerosene', 400, 0, 200, 0, 'Talca');
+							('Talca_Diesel', 'Diesel', 400, 0, 200, 0, 'Talca'),
+							('Talca_Kerosene', 'Kerosene', 400, 0, 200, 0, 'Talca');
 
 create or replace function litros_disponibles(varchar(45), varchar(45), float) returns float as $$
 	declare

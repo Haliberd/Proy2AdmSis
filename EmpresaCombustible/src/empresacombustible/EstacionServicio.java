@@ -411,14 +411,14 @@ public class EstacionServicio
             case ("97"):
                 tipo_columna = "'Precio97'";
                 break;
-            case ("petroleo"):
+            case ("Diesel"):
                 tipo_columna = "'PrecioDiesel'";
                 break;
-            case ("kerosene"):
+            case ("Kerosene"):
                 tipo_columna = "'PrecioKerosene'";
                 break;
         }
-        String consultaSQL = "SELECT litros_disponibles( " + tipo_columna + "::varchar(45), " + tipo + "::varchar(45), " + Integer.parseInt(cantidad) + ");";
+        String consultaSQL = "SELECT litros_disponibles( " + tipo_columna + "::varchar(45), '" + tipo + "'::varchar(45), " + Integer.parseInt(cantidad) + ");";
         int resultado = conexion.consultaFuncion(consultaSQL);
         return resultado;
     }
@@ -489,12 +489,12 @@ public class EstacionServicio
         String bandera = "-1";
         while (bandera.compareTo("93") != 0 && bandera.compareTo("95") != 0 && bandera.compareTo("97") != 0 
                 && bandera.compareTo("Diesel") != 0 && bandera.compareTo("Kerosene") != 0 && bandera.compareTo("0") != 1){
-            System.out.println("\n-Bienvenido al distribuidor de combustible-\n"
-                    + "Ingrese el surtidor al cual desea cargar combustible:\n"
+            System.out.println("\nBienvenido al distribuidor de combustible\n"
+                    + "Ingrese una opción correspondiente al tipo de combustible a distribuir:\n"
                     + "1) 93\n"
                     + "2) 95\n"
                     + "3) 97\n"
-                    + "4) petroleo\n"
+                    + "4) diesel\n"
                     + "5) kerosene\n"
                     + "0) Salir\n"
                     + "Ingrese su opcion: ");
