@@ -253,7 +253,7 @@ public class EmpresaCombustible {
     */
     public static void consultasDistribuidora(String solicitud, int puerto, String estacionServicio)
     {
-        final String host = "localhost";
+        final String host = "25.91.140.109";
         final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
