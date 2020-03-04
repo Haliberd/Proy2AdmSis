@@ -1,0 +1,4 @@
+|Surtidor    |Valor Total |Litros Vendidos
+|Curico_97  |240000        |600.0 
+|Curico_95  |80000        |200.0 
+|Curico_93  |80000        |200.0 
