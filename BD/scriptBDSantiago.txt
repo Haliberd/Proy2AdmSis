@@ -1,0 +1,33 @@
+CREATE TABLE public.estaciondeservicio (
+    nombre character varying(45) NOT NULL,
+    factorutilidad double precision DEFAULT 0.01,
+    precio93 integer NOT NULL,
+    precio95 integer NOT NULL,
+    precio97 integer NOT NULL,
+    preciodiesel integer NOT NULL,
+    preciokerosene integer NOT NULL
+);
+
+CREATE TABLE public.surtidor (
+    nombre character varying(45) NOT NULL,
+    tipo character varying(45) NOT NULL,
+    precio integer NOT NULL,
+    litrosconsumidos double precision NOT NULL,
+    litrosdisponibles double precision NOT NULL,
+    cargasrealizadas integer NOT NULL,
+    refestacion character varying(45)
+);
+
+CREATE TABLE public.ventas (
+    refsurtidor character varying(45),
+    precio integer NOT NULL,
+    litros double precision NOT NULL
+);
+
+INSERT INTO public.estaciondeservicio (nombre, factorutilidad, precio93, precio95, precio97, preciodiesel, preciokerosene) VALUES ('Santiago', 0.01, 505, 606, 707, 555, 404);
+
+INSERT INTO public.surtidor (nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas, refestacion) VALUES ('Santiago04', 'Diesel', 555, 0, 5000, 0, 'Santiago');
+INSERT INTO public.surtidor (nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas, refestacion) VALUES ('Santiago05', 'Kerosene', 404, 0, 5000, 0, 'Santiago');
+INSERT INTO public.surtidor (nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas, refestacion) VALUES ('Santiago01', '93', 505, 0, 5000, 0, 'Santiago');
+INSERT INTO public.surtidor (nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas, refestacion) VALUES ('Santiago02', '95', 606, 0, 5000, 0, 'Santiago');
+INSERT INTO public.surtidor (nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas, refestacion) VALUES ('Santiago03', '97', 707, 0, 5000, 0, 'Santiago');
