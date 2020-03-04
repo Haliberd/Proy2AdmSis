@@ -81,12 +81,12 @@ create table Ventas(
 
 alter table Ventas owner to postgres;
 
-insert into EstacionDeServicio values ('Santiago', 0.01, 400, 400, 400, 400, 400),
+insert into EstacionDeServicio values ('Santiago', 0.01, 400, 400, 400, 400, 400);
 insert into Surtidor values ('Santiago_93', '93', 400, 0, 200, 0, 'Santiago'),
 							('Santiago_95', '95', 400, 0, 200, 0, 'Santiago'),
 							('Santiago_97', '97', 400, 0, 200, 0, 'Santiago'),
-							('Santiago_Diesel', 'petroleo', 400, 0, 200, 0, 'Santiago'),
-							('Santiago_Kerosene', 'kerosene', 400, 0, 200, 0, 'Santiago');
+							('Santiago_Diesel', 'Diesel', 400, 0, 200, 0, 'Santiago'),
+							('Santiago_Kerosene', 'Kerosene', 400, 0, 200, 0, 'Santiago');
 
 
 
