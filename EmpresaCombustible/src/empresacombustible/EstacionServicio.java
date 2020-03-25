@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -32,7 +33,8 @@ public class EstacionServicio
     private static int precio93, precio95, precio97, precioDiesel, precioKerosene;
     private static double factorUtilidad;
     private static ConexionBD conexion;
-    private static GeneradorArchivos generador;
+    private static GeneradorArchivos generadorArchivos;
+    private static CifradoDescifrado CifDes;
   
     /**
      * Permite crear la conexión hacia la BD de la distribuidora
@@ -54,7 +56,8 @@ public class EstacionServicio
         this.puertoServidorSurtidores = puertoSurtidores;
         
         conexion = new ConexionBD(url, usuario, password, nombreEstacion);
-        generador = new GeneradorArchivos();
+        generadorArchivos = new GeneradorArchivos();
+        CifDes = new CifradoDescifrado("Distribuidora", "Empresa");
 
         TServidor = new ListenerEmpresa();
         TLocal = new ThreadLocal();
@@ -63,6 +66,7 @@ public class EstacionServicio
         Thread l = new Thread(TLocal);
         Thread s = new Thread(TServidor);
         Thread t = new Thread(TRecibidor);
+            
         t.start();
         l.start();
         s.start();
@@ -312,6 +316,13 @@ public class EstacionServicio
                     output = new DataOutputStream(socket.getOutputStream());
                     
                     String mensaje = input.readUTF();
+                    System.out.println("Mensaje cifrado: "+mensaje);
+                    
+                    byte[] msjeBytes = mensaje.getBytes();
+                    mensaje = CifDes.descifrarInformacion(msjeBytes);
+                    
+                    System.out.println("Mensaje descencriptado: ");
+                    
 
                     String[] msjeSplit = mensaje.split("-");
                     if(msjeSplit[0].equals("Informacion"))
@@ -385,6 +396,8 @@ public class EstacionServicio
                     //System.out.println("Se ha desconectado a la empresa");
                 }
             } catch (IOException ex) {
+                Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -584,13 +597,13 @@ public class EstacionServicio
      * (Reporte Ventas)
      * @return tamaño en bytes del archivo creado.
      */
-    public static int consultaInfoVentas()
+    public static int consultaInfoVentas() throws Exception
     {
         String consultaSQL = "SELECT refsurtidor as Surtidor, sum(precio) AS valorTotal, sum(litros) as litrosVendidos FROM Ventas "+
                             "GROUP BY refsurtidor";
         ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
         
-        int tamanoArchivo = generador.generarInfoVentas(informacion);
+        int tamanoArchivo = generadorArchivos.generarInfoVentas(informacion);
         return tamanoArchivo;
     }
     
@@ -605,7 +618,7 @@ public class EstacionServicio
         String consultaSQL = "SELECT nombre, tipo, precio, litrosconsumidos, litrosdisponibles, cargasrealizadas FROM Surtidor";
         ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
         
-        int tamanoArchivo = generador.generarInfoSurtidores(informacion);
+        int tamanoArchivo = generadorArchivos.generarInfoSurtidores(informacion);
         return tamanoArchivo;
     }
 }

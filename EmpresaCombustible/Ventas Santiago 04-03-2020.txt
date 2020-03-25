@@ -1,3 +1,0 @@
-|Surtidor    |Valor Total |Litros Vendidos
-|Santiago_97  |101000        |200.0 
-|Santiago_93  |80000        |200.0 

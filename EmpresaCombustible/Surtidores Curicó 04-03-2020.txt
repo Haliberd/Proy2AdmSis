@@ -1,6 +1,0 @@
-|EstaciónNº  |Precio  |Litros Consumidos  |Litros Disponibles |NºCargas  |Tipo
-|Curico_Kerosene  |400     |0.0                |200.0             |0         |kerosene
-|Curico_95  |400     |200.0                |0.0             |2         |95
-|Curico_93  |400     |200.0                |0.0             |1         |93
-|Curico_Diesel  |400     |0.0                |300.0             |0         |petroleo
-|Curico_97  |400     |600.0                |0.0             |1         |97

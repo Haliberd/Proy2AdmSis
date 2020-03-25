@@ -25,11 +25,11 @@ public class GeneradorArchivos
      * @param informacion contiene la información retornada desde la BD.
      * @return retorna el tamaño en bytes del archivo creado
      */
-    public int generarInfoVentas(ResultSet informacion)
+    public int generarInfoVentas(ResultSet informacion) throws Exception
     {
         int tamanoArchivo = 0;
         try {
-            File archivo = new File("informacion_Ventas.txt");
+            File archivo = new File("informacion_Ventas_Encriptado.txt");
             if(!archivo.exists())
             {
                 archivo.createNewFile();
@@ -69,7 +69,7 @@ public class GeneradorArchivos
     {
         int tamanoArchivo = 0;
         try {
-            File archivo = new File("informacion_Surtidores.txt");
+            File archivo = new File("informacion_Surtidores_Encriptado.txt");
             if(!archivo.exists())
             {
                 archivo.createNewFile();

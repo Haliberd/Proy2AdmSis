@@ -1,6 +1,0 @@
-|EstaciónNº  |Precio  |Litros Consumidos  |Litros Disponibles |NºCargas  |Tipo
-|Santiago_95  |400     |0.0                |200.0             |0         |95
-|Santiago_Diesel  |400     |0.0                |200.0             |0         |petroleo
-|Santiago_Kerosene  |400     |0.0                |200.0             |0         |kerosene
-|Santiago_93  |400     |200.0                |0.0             |2         |93
-|Santiago_97  |505     |200.0                |100.0             |1         |97

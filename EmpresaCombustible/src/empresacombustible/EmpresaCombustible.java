@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.InputMismatchException;
@@ -26,6 +27,8 @@ import java.util.logging.Logger;
 public class EmpresaCombustible {
 
     private static VistaPrincipal vistaPrincipal;
+    private static CifradoDescifrado CifDes;
+    private static GenerarCargarLlaves generadorLlaves;
     
     /**
     Básicamente un menú que permite al usuario interactuar con la aplicación de 
@@ -34,6 +37,14 @@ public class EmpresaCombustible {
     */
     public static void main(String[] args)
     {
+        try {
+            generadorLlaves = new GenerarCargarLlaves();
+            CifDes = new CifradoDescifrado("Empresa", "Distribuidora");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+        }
         /*vistaPrincipal = new VistaPrincipal();
         vistaPrincipal.setLocationRelativeTo(null);
         vistaPrincipal.setVisible(true);*/
@@ -253,7 +264,7 @@ public class EmpresaCombustible {
     */
     public static void consultasDistribuidora(String solicitud, int puerto, String estacionServicio)
     {
-        final String host = "25.91.140.109";
+        final String host = "localhost";
         final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
@@ -262,7 +273,10 @@ public class EmpresaCombustible {
             Socket socket = new Socket(host, puertoF);
             output = new DataOutputStream(socket.getOutputStream());
             
-            output.writeUTF(solicitud);
+            String solicitudCifrada = CifDes.cifrarInformacion(solicitud);
+            System.out.println("Solicitud cifrada: "+solicitudCifrada);
+            
+            output.writeUTF(solicitudCifrada);
             
             String[] msjeSplit = solicitud.split("-");
             
@@ -427,6 +441,7 @@ public class EmpresaCombustible {
             }
         }
     }
+    
     
     /**
     * Se utiliza para poder almacenar el archivo con la información recibida desde
