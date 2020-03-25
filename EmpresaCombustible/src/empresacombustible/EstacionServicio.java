@@ -14,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -57,7 +58,7 @@ public class EstacionServicio
         
         conexion = new ConexionBD(url, usuario, password, nombreEstacion);
         generadorArchivos = new GeneradorArchivos();
-        CifDes = new CifradoDescifrado("Distribuidora", "Empresa");
+        CifDes = new CifradoDescifrado();
 
         TServidor = new ListenerEmpresa();
         TLocal = new ThreadLocal();
@@ -318,13 +319,15 @@ public class EstacionServicio
                     String mensaje = input.readUTF();
                     System.out.println("Mensaje cifrado: "+mensaje);
                     
-                    byte[] msjeBytes = mensaje.getBytes();
-                    mensaje = CifDes.descifrarInformacion(msjeBytes);
+                    //byte[] msjeBytes = mensaje.getBytes();
+                    mensaje = CifDes.descifrarInformacion(mensaje);
                     
-                    System.out.println("Mensaje descencriptado: ");
+                    System.out.println("Mensaje desencriptado: "+mensaje);
                     
 
                     String[] msjeSplit = mensaje.split("-");
+                    System.out.println(Arrays.toString(msjeSplit));        
+                            
                     if(msjeSplit[0].equals("Informacion"))
                     {
                         if(msjeSplit[1].equals("Ventas"))

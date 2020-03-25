@@ -5,13 +5,19 @@
  */
 package empresacombustible;
 import InterfazGrafica.VistaPrincipal;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,7 +45,7 @@ public class EmpresaCombustible {
     {
         try {
             generadorLlaves = new GenerarCargarLlaves();
-            CifDes = new CifradoDescifrado("Empresa", "Distribuidora");
+            CifDes = new CifradoDescifrado();
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -292,17 +298,19 @@ public class EmpresaCombustible {
                 String nombreArchivo = "";
                 if(msjeSplit[1].equals("Ventas"))
                 {
-                    nombreArchivo = "Ventas "+estacionServicio+" "+fechaActual+".txt";
+                    nombreArchivo = "Ventas "+estacionServicio+" "+fechaActual;
                 }
                 else if(msjeSplit[1].equals("Surtidores"))
                 {
-                    nombreArchivo = "Surtidores "+estacionServicio+" "+fechaActual+".txt";
+                    nombreArchivo = "Surtidores "+estacionServicio+" "+fechaActual;
                 }
-                FileOutputStream file = new FileOutputStream(nombreArchivo);
+                FileOutputStream file = new FileOutputStream(nombreArchivo+".txt");
                 inputS.read(b, 0, b.length);
                 file.write(b, 0, b.length);
                 file.close();
                 System.out.println("Información guardada en "+nombreArchivo);
+                
+                readAndWriteFromfile(nombreArchivo);
             }
             else if(msjeSplit[0].equals("Cambio precio"))
             {
@@ -317,6 +325,8 @@ public class EmpresaCombustible {
             socket.close();
         } catch (IOException ex) {
             Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidAlgorithmParameterException ex) {
+            Logger.getLogger(EmpresaCombustible.class.getName()).log(Level.SEVERE, null, ex);
         }   
     }
     
@@ -455,5 +465,25 @@ public class EmpresaCombustible {
         String fechaActual = formatter.format(date);  
         //System.out.println("Date Format with MM-dd-yyyy : "+fechaActual);  
         return fechaActual;
+    }
+    
+    public static void readAndWriteFromfile(String nombreArchivo) throws IOException, InvalidAlgorithmParameterException
+    {
+        BufferedReader inputStream = new BufferedReader(new FileReader(
+                nombreArchivo+".txt"));
+        File UIFile = new File(nombreArchivo+" Desencriptado"+".txt");
+        if (!UIFile.exists()) {
+            UIFile.createNewFile();
+        }
+        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile());
+        BufferedWriter outputStream= new BufferedWriter(filewriter);
+        String count;
+        while ((count = inputStream.readLine()) != null) {
+            String linea = CifDes.descifrarInformacion(count);
+            outputStream.write(linea);
+        }
+        outputStream.flush();
+        outputStream.close();
+        inputStream.close();
     }
 }

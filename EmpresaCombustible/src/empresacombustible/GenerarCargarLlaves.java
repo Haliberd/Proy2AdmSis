@@ -5,29 +5,12 @@
  */
 package empresacombustible;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -41,14 +24,45 @@ public class GenerarCargarLlaves
     
     public GenerarCargarLlaves() throws NoSuchAlgorithmException, IOException
     {
+        //generadorLlavePublicaPrivada("Empresa");
+        //generadorLlavePublicaPrivada("Distribuidora");
+    }
+    
+    /*
+    public SecretKey generarLlaveSecreta()
+    {
         try {
-            generadorLlavePublicaPrivada("Empresa");
-            generadorLlavePublicaPrivada("Distribuidora");
-        } catch (InvalidKeySpecException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException ex) {
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            SecretKey skey = kgen.generateKey();
+            
+            String outFilePub = "llaveSecreta";
+        
+            FileOutputStream outPub = new FileOutputStream(outFilePub + ".key");
+            outPub.write(skey.getEncoded());
+            outPub.close();
+            
+            return skey;
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
+    }*/
+    
+    public SecretKey cargaLlaveSecreta() throws IOException, NoSuchAlgorithmException
+    {
+        Path path = Paths.get("llaveSecreta.key");
+        byte[] keyb = Files.readAllBytes(path);
+
+        SecretKeySpec skey = new SecretKeySpec(keyb, "AES");
+        return skey;
     }
+    
      
+    /*
     public void generadorLlavePublicaPrivada(String nombreLlave) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
     {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -76,6 +90,7 @@ public class GenerarCargarLlaves
         System.err.println("Private key format: " + pvt.getFormat());
     }
     
+    
     public PublicKey cargaLlavePublica(String nombreLlave) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException
     {
         Path path = Paths.get("llavePublica"+nombreLlave+".key");
@@ -97,5 +112,5 @@ public class GenerarCargarLlaves
         KeyFactory kf = KeyFactory.getInstance("RSA");
         PrivateKey pvtKey = kf.generatePrivate(ks);
         return pvtKey;
-    }
+    }*/
 }
