@@ -275,6 +275,20 @@ public class EstacionServicio
                         String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
                         out.writeUTF(resultado);
                     }
+                    /*Funcion encargada de leer si es que existen solicitudes en un surtidor
+                    * las cuales fueron ingresadas de modo offline.
+                    * Dichas solicitudes no cuentan con el efecto de devolver el resultado para verificar si es que habia combustible
+                    * dado a que esta verificacion se realiza en el surtidor de manera offline.
+                    */
+                    else if(argumentos.length == 1 && argumentos[0].equals("1")){
+                        String recolector = "1";
+                        while (!recolector.equals("0")){
+                            recolector = in.readUTF();
+                            String[] argRecolector = recolector.split("-");
+                            if(argRecolector.length == 2)
+                                consultaCargaCombustible(argRecolector[0], argRecolector[1]);
+                        }
+                    }
                     else{//Para finalizar la conexion
                         System.out.println("Closed: " + socket);
                         socket.close();

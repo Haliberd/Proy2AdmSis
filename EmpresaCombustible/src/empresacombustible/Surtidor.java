@@ -5,12 +5,14 @@
  */
 package empresacombustible;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +40,7 @@ public class Surtidor {
             Socket socket = new Socket("localhost", puertoSocket);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
-            programaConectado(datainput, dataoutput, tipo);
+            programaConectado(datainput, dataoutput, tipo, nombreEmpresa(empresa));
         }catch(Exception e){
             System.out.println("El surtidor esta funcionando en modo offline.");    
             programaDesconectado(tipo, nombreEmpresa(empresa));
@@ -67,7 +69,7 @@ public class Surtidor {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Cantidad: ");
                 String cantidad = scanner.nextLine();
-                comandosIngresados.add(nombreEmpresa + "-" + tipo + "-" + cantidad);
+                comandosIngresados.add(tipo + "-" + cantidad);
                 /*String resultado = datainput.readUTF();
                 try{
                     int valorResultado = Integer.valueOf(resultado);
@@ -106,8 +108,27 @@ public class Surtidor {
         outputStream.close();
     }
     
-    private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo) throws IOException{
+    private static void leerComandosAlmacenados(String tipo, String nombreEmpresa, DataOutputStream dataoutput) throws FileNotFoundException, IOException{
+        dataoutput.writeUTF("1");
+        File UIFile = new File(tipo + "-" + nombreEmpresa +".txt");
+        if (UIFile.exists()) {
+            BufferedReader inputStream = new BufferedReader(new FileReader(UIFile.getAbsoluteFile()));
+            String count;
+            while ((count = inputStream.readLine()) != null) {
+                dataoutput.writeUTF(count);
+            }
+            dataoutput.writeUTF("0");
+            inputStream.close();
+            UIFile.getAbsoluteFile().delete();
+        }
+        else{
+            dataoutput.writeUTF("0");
+        }
+    }
+    
+    private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo, String nombreEmpresa) throws IOException{
         String bandera = "9";
+        leerComandosAlmacenados(tipo, nombreEmpresa, dataoutput);
         while (bandera.compareTo("0") != 0){
             bandera = menu();
             if(bandera.compareTo("1") == 0){
