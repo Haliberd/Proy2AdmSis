@@ -216,7 +216,7 @@ public class Surtidor {
         if (!UIFile.exists()) {
             UIFile.createNewFile();
         }
-        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile(), true);
+        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile());
         BufferedWriter oS = new BufferedWriter(filewriter);
         PrintWriter outputStream = new PrintWriter(oS);
         outputStream.print(cantidad + "\n");
