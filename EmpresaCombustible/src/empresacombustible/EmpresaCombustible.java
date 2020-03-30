@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.InputMismatchException;
@@ -43,17 +42,15 @@ public class EmpresaCombustible {
     */
     public static void main(String[] args)
     {
-        try {
-            generadorLlaves = new GenerarCargarLlaves();
-            CifDes = new CifradoDescifrado();
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        generadorLlaves = new GenerarCargarLlaves(); 
+        /*GenerarLlaveSecreta() solo se ejecuta para generar una llave, no es
+        necesario cambiar la llave a cada rato.*/
+        //generadorLlaves.generarLlaveSecreta(); 
+        
         /*vistaPrincipal = new VistaPrincipal();
         vistaPrincipal.setLocationRelativeTo(null);
         vistaPrincipal.setVisible(true);*/
+        CifDes = new CifradoDescifrado();
                
         try {
             int opcion = -1;
@@ -274,11 +271,12 @@ public class EmpresaCombustible {
         final int puertoF = puerto;
         DataInputStream input;
         DataOutputStream output;
-
+        boolean verificoConexion = false;
         try {
             Socket socket = new Socket(host, puertoF);
             output = new DataOutputStream(socket.getOutputStream());
             
+            /* Cifra la consulta que va a enviar hacia una distribuidora*/
             String solicitudCifrada = CifDes.cifrarInformacion(solicitud);
             System.out.println("Solicitud cifrada: "+solicitudCifrada);
             
@@ -286,47 +284,74 @@ public class EmpresaCombustible {
             
             String[] msjeSplit = solicitud.split("-");
             
-            if(msjeSplit[0].equals("Informacion"))
+            if(verificoConexion == false)
             {
                 input = new DataInputStream(socket.getInputStream());
-                String mensaje = input.readUTF();
-                int tamanoArchivo = Integer.parseInt(mensaje);
-                InputStream inputS = socket.getInputStream();
-                String fechaActual = fechaActual();
-                byte[] b = new byte[tamanoArchivo];
-                
-                String nombreArchivo = "";
-                if(msjeSplit[1].equals("Ventas"))
+                String msje = input.readUTF();
+                System.out.println("Msje Cifrado: "+msje);
+                msje = CifDes.descifrarInformacion(msje);
+                System.out.println("Cifrando el msje...");
+                output.writeUTF(msje);
+                System.out.println(input.readUTF());
+                String fin = input.readUTF();
+   
+                if(fin.equals("true"))
                 {
-                    nombreArchivo = "Ventas "+estacionServicio+" "+fechaActual;
+                    verificoConexion = true;
                 }
-                else if(msjeSplit[1].equals("Surtidores"))
-                {
-                    nombreArchivo = "Surtidores "+estacionServicio+" "+fechaActual;
-                }
-                FileOutputStream file = new FileOutputStream(nombreArchivo+".txt");
-                inputS.read(b, 0, b.length);
-                file.write(b, 0, b.length);
-                file.close();
-                System.out.println("Información guardada en "+nombreArchivo);
-                
-                readAndWriteFromfile(nombreArchivo);
             }
-            else if(msjeSplit[0].equals("Cambio precio"))
+            if(verificoConexion == true)
             {
-                input = new DataInputStream(socket.getInputStream());
-                String mensaje = "";
-                while(!mensaje.equals("Fin"))
+                if(msjeSplit[0].equals("Informacion"))
                 {
-                    mensaje = input.readUTF();
-                    System.out.println(mensaje);
+                    input = new DataInputStream(socket.getInputStream());
+                    String mensaje = input.readUTF();
+                    int tamanoArchivo = Integer.parseInt(mensaje);
+                    InputStream inputS = socket.getInputStream();
+                    String fechaActual = fechaActual();
+                    byte[] b = new byte[tamanoArchivo];
+
+                    String nombreArchivo = "";
+                    if(msjeSplit[1].equals("Ventas"))
+                    {
+                        nombreArchivo = "Ventas "+estacionServicio+" "+fechaActual;
+                    }
+                    else if(msjeSplit[1].equals("Surtidores"))
+                    {
+                        nombreArchivo = "Surtidores "+estacionServicio+" "+fechaActual;
+                    }
+                    FileOutputStream file = new FileOutputStream(nombreArchivo+".txt");
+                    inputS.read(b, 0, b.length);
+                    file.write(b, 0, b.length);
+                    file.close();
+                    System.out.println("Información guardada en "+nombreArchivo);
+
+                    LeeEscribeArchivo(nombreArchivo);
+                }
+                else if(msjeSplit[0].equals("Cambio precio"))
+                {
+                    input = new DataInputStream(socket.getInputStream());
+                    String msje = input.readUTF();
+
+                    //System.out.println("msjeEnc: "+msje);
+                    msje = CifDes.descifrarInformacion(msje);
+                    System.out.println("msjeDes: "+msje);
+
+                    String mensaje = "";
+                    while(!mensaje.equals("Fin"))
+                    {
+                        mensaje = input.readUTF();
+                        //System.out.println("msjEnc: "+mensaje);
+                        mensaje = CifDes.descifrarInformacion(mensaje);
+                        System.out.println("msjeDes: "+mensaje);
+                    }
                 }
             }
             socket.close();
         } catch (IOException ex) {
-            Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         } catch (InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(EmpresaCombustible.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }   
     }
     
@@ -452,7 +477,6 @@ public class EmpresaCombustible {
         }
     }
     
-    
     /**
     * Se utiliza para poder almacenar el archivo con la información recibida desde
     la distribuidora con una fecha.
@@ -467,7 +491,12 @@ public class EmpresaCombustible {
         return fechaActual;
     }
     
-    public static void readAndWriteFromfile(String nombreArchivo) throws IOException, InvalidAlgorithmParameterException
+    /**
+     * Recibe un archivo con su contenido encriptado, lo lee, desencripta y guarda 
+     * en un archivo nuevo.
+     * @param nombreArchivo Nombre del archivo que va a desencriptar.
+     */
+    public static void LeeEscribeArchivo(String nombreArchivo) throws IOException, InvalidAlgorithmParameterException
     {
         BufferedReader inputStream = new BufferedReader(new FileReader(
                 nombreArchivo+".txt"));
@@ -480,7 +509,7 @@ public class EmpresaCombustible {
         String count;
         while ((count = inputStream.readLine()) != null) {
             String linea = CifDes.descifrarInformacion(count);
-            outputStream.write(linea);
+            outputStream.write(linea+"\n");
         }
         outputStream.flush();
         outputStream.close();

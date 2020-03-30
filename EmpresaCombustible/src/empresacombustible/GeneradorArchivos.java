@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class GeneradorArchivos 
 {
     /**
-     * Permite crear y escribir dentro de una archivo
+     * Permite crear y escribir información encriptada dentro de una archivo
      * En este caso contiene la información de las ventas generadas en cada 
      * surtidor de una distribuidora.
      * @param informacion contiene la información retornada desde la BD.
@@ -38,7 +38,6 @@ public class GeneradorArchivos
             } 
             PrintWriter pw = new PrintWriter(archivo);
             
-            
             String linea = ("|Surtidor    |"+"Valor Total"+" |Litros Vendidos");
             linea = CifDes.cifrarInformacion(linea);
             pw.println(linea);
@@ -48,7 +47,7 @@ public class GeneradorArchivos
                     int valorTotal  = informacion.getInt("valortotal");
                     double litrosVendidos = informacion.getDouble("litrosvendidos");
                     linea = "|"+surtidor+"  |"+valorTotal+"        |"+litrosVendidos+" ";
-                    //byte[] l = linea.getBytes();
+                    /*Se realiza el cifrado*/
                     linea = CifDes.cifrarInformacion(linea);
                     pw.println(linea);
                 }
@@ -65,7 +64,7 @@ public class GeneradorArchivos
     }
     
     /**
-     * Permite crear y escribir dentro de una archivo
+     * Permite crear y escribir información encriptada dentro de una archivo
      * En este caso contiene la información de los surtidores pertenecientes
      * a una distribuidora en específico.
      * @param informacion contiene la información retornada desde la BD.
@@ -84,7 +83,6 @@ public class GeneradorArchivos
             
             String linea = ("|EstaciónNº  |"+"Precio "+" |Litros Consumidos "+" |Litros Disponibles "+"|NºCargas"+"  |Tipo");
             linea = CifDes.cifrarInformacion(linea);
-            //System.out.println(linea);
             pw.println(linea);
             try {
                 while(informacion.next()){
@@ -97,6 +95,7 @@ public class GeneradorArchivos
                     linea = "|"+nombre+"  |"+precio+"     |"+litrosConsumidos+
                             "                |"+litrosDisponibles+
                             "             |"+cargas+"         |"+tipo;
+                    /*Se realiza el cifrado*/
                     linea = CifDes.cifrarInformacion(linea);
                     pw.println(linea);
                 }

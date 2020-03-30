@@ -10,12 +10,13 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -306,102 +307,139 @@ public class EstacionServicio
             Socket socket = null;
             DataInputStream input;
             DataOutputStream output; 
-            
             try { 
                 servidor = new ServerSocket(puertoServidorEmpresa);
                 //System.out.println("¡Servidor Estación de Servicio "+nombre+" INICIADO!");
                 while(true)
                 {
+                    boolean verificoConexion = false;
                     socket = servidor.accept();
                     input = new DataInputStream(socket.getInputStream());
                     output = new DataOutputStream(socket.getOutputStream());
                     
+                    /*Recibe una consulta cifrada desde la empresa*/
                     String mensaje = input.readUTF();
                     System.out.println("Mensaje cifrado: "+mensaje);
                     
                     //byte[] msjeBytes = mensaje.getBytes();
-                    mensaje = CifDes.descifrarInformacion(mensaje);
                     
+                    /*Descifra la consulta de la empresa*/
+                    mensaje = CifDes.descifrarInformacion(mensaje);  
                     System.out.println("Mensaje desencriptado: "+mensaje);
-                    
+
 
                     String[] msjeSplit = mensaje.split("-");
-                    System.out.println(Arrays.toString(msjeSplit));        
-                            
-                    if(msjeSplit[0].equals("Informacion"))
+                    //System.out.println(Arrays.toString(msjeSplit)); 
+                        
+                    if(verificoConexion == false)
                     {
-                        if(msjeSplit[1].equals("Ventas"))
+                        output = new DataOutputStream(socket.getOutputStream());
+                        //output.writeUTF("¿y tu, quién eres?");
+                        BigInteger b = new BigInteger(256, new Random());
+                        String numero = b.toString();
+                        output.writeUTF(CifDes.cifrarInformacion(b.toString()));
+                        String resultado = input.readUTF();
+                        //System.out.println("Resultado: "+resultado);
+                        //System.out.println("Número original: "+numero);
+                        if(resultado.equals(numero))
                         {
-                            DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
-                            byte[] b;
-                            int tamanoArchivo = consultaInfoVentas();
-                            msje.writeUTF(Integer.toString(tamanoArchivo));
-                            FileInputStream archivo = new FileInputStream("informacion_Ventas.txt");
-                            b = new byte[tamanoArchivo];
-                            archivo.read(b, 0, b.length);
-                            OutputStream outputS = socket.getOutputStream();
-                            outputS.write(b, 0, b.length);
+                            output.writeUTF("Correcto!, procesaré tu consulta.");
+                            verificoConexion = true;
+                            output.writeUTF("true");
                         }
-                        else if(msjeSplit[1].equals("Surtidores"))
+                        else
                         {
-                            DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
-                            byte[] b;
-                            int tamanoArchivo = consultaInfoSurtidores();
-                            msje.writeUTF(Integer.toString(tamanoArchivo));
-                            FileInputStream archivo = new FileInputStream("informacion_Surtidores.txt");
-                            b = new byte[tamanoArchivo];
-                            archivo.read(b, 0, b.length);
-                            OutputStream outputS = socket.getOutputStream();
-                            outputS.write(b, 0, b.length);
+                            output.writeUTF("Tu no eres la empresa... ¿qué pretendes?");
                         }
                     }
-                    else if(msjeSplit[0].equals("Cambio precio"))
-                    {
-                        int precio = Integer.parseInt(msjeSplit[2]);
-                        if(msjeSplit[1].equals("93"))
+                    if(verificoConexion == true){
+                        if(msjeSplit[0].equals("Informacion"))
                         {
-                            consultaCambioPrecio("precio93", precio);
-                            output.writeUTF("El precio actual es $"+precio93);
-                            precio93 = precio + (int) (precio* factorUtilidad);
-                            output.writeUTF("El nuevo precio es $"+precio93);
+                            if(msjeSplit[1].equals("Ventas"))
+                            {
+                                DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
+                                byte[] b;
+                                int tamanoArchivo = consultaInfoVentas();
+                                msje.writeUTF(Integer.toString(tamanoArchivo));
+                                FileInputStream archivo = new FileInputStream("informacion_Ventas.txt");
+                                b = new byte[tamanoArchivo];
+                                archivo.read(b, 0, b.length);
+                                OutputStream outputS = socket.getOutputStream();
+                                outputS.write(b, 0, b.length);
+                            }
+                            else if(msjeSplit[1].equals("Surtidores"))
+                            {
+                                DataOutputStream msje = new DataOutputStream(socket.getOutputStream());  
+                                byte[] b;
+                                int tamanoArchivo = consultaInfoSurtidores();
+                                msje.writeUTF(Integer.toString(tamanoArchivo));
+                                FileInputStream archivo = new FileInputStream("informacion_Surtidores.txt");
+                                b = new byte[tamanoArchivo];
+                                archivo.read(b, 0, b.length);
+                                OutputStream outputS = socket.getOutputStream();
+                                outputS.write(b, 0, b.length);
+                            }
                         }
-                        else if(msjeSplit[1].equals("95"))
+                        else if(msjeSplit[0].equals("Cambio precio"))
                         {
-                            consultaCambioPrecio("precio95", precio);
-                            output.writeUTF("El precio actual es $"+precio95);
-                            precio95 = precio + (int) (precio* factorUtilidad);
-                            output.writeUTF("El nuevo precio es $"+precio95);
-                        }
-                        else if(msjeSplit[1].equals("97"))
-                        {
-                            consultaCambioPrecio("precio97", precio);
-                            output.writeUTF("El precio actual es $"+precio97);
-                            precio97 = precio + (int) (precio* factorUtilidad);
-                            output.writeUTF("El nuevo precio es $"+precio97);
-                        }
-                        else if(msjeSplit[1].equals("Diesel"))
-                        {
-                            consultaCambioPrecio("precioDiesel", precio);
-                            output.writeUTF("El precio actual es $"+precioDiesel);
-                            precioDiesel = precio + (int) (precio* factorUtilidad);
-                            output.writeUTF("El nuevo precio es $"+precioDiesel);
-                        }
-                        else if(msjeSplit[1].equals("Kerosene"))
-                        {
-                            consultaCambioPrecio("precioKerosene", precio);
-                            output.writeUTF("El precio actual es $"+precioKerosene);
-                            precioKerosene = precio + (int) (precio* factorUtilidad);
-                            output.writeUTF("El nuevo precio es $"+precioKerosene);
+                            int precio = Integer.parseInt(msjeSplit[2]);
+                            if(msjeSplit[1].equals("93"))
+                            {
+                                consultaCambioPrecio("precio93", precio);
+                                String msje = "El precio actual es $"+precio93;
+                                output.writeUTF(CifDes.cifrarInformacion(msje));
+                                //System.out.println("1: "+msje);
+                                precio93 = precio + (int) (precio* factorUtilidad);
+                                String msje2 = "El nuevo precio es $"+precio93;
+                                //System.out.println("2: "+msje2);
+                                output.writeUTF(CifDes.cifrarInformacion(msje2));
+                            }
+                            else if(msjeSplit[1].equals("95"))
+                            {
+                                consultaCambioPrecio("precio95", precio);
+                                String msje = "El precio actual es $"+precio95;
+                                output.writeUTF(CifDes.cifrarInformacion(msje));
+                                precio95 = precio + (int) (precio* factorUtilidad);
+                                String msje2 = "El nuevo precio es $"+precio95;
+                                output.writeUTF(CifDes.cifrarInformacion(msje2));
+                            }
+                            else if(msjeSplit[1].equals("97"))
+                            {
+                                consultaCambioPrecio("precio97", precio);
+                                String msje = "El precio actual es $"+precio97;
+                                output.writeUTF(CifDes.cifrarInformacion(msje));
+                                precio97 = precio + (int) (precio* factorUtilidad);
+                                String msje2 = "El nuevo precio es $"+precio97;
+                                output.writeUTF(CifDes.cifrarInformacion(msje2));
+                            }
+                            else if(msjeSplit[1].equals("Diesel"))
+                            {
+                                consultaCambioPrecio("precioDiesel", precio);
+                                String msje = "El precio actual es $"+precioDiesel;
+                                output.writeUTF(CifDes.cifrarInformacion(msje));
+                                precioDiesel = precio + (int) (precio* factorUtilidad);
+                                String msje2 = "El nuevo precio es $"+precioDiesel;
+                                output.writeUTF(CifDes.cifrarInformacion(msje2));
+                            }
+                            else if(msjeSplit[1].equals("Kerosene"))
+                            {
+                                consultaCambioPrecio("precioKerosene", precio);
+                                String msje = "El precio actual es $"+precioKerosene;
+                                output.writeUTF(CifDes.cifrarInformacion(msje));
+                                precioKerosene = precio + (int) (precio* factorUtilidad);
+                                String msje2 = "El nuevo precio es $"+precioKerosene;
+                                output.writeUTF(CifDes.cifrarInformacion(msje2));
+                            }
                         }
                     }
-                    output.writeUTF("Fin");
+                    output.writeUTF(CifDes.cifrarInformacion("Fin"));
                     socket.close();
                     //System.out.println("Se ha desconectado a la empresa");
                 }
             } catch (IOException ex) {
-                Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             } catch (Exception ex) {
-                Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
         }
     }
