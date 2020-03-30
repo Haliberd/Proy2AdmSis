@@ -18,12 +18,14 @@ import java.util.Scanner;
 
 public class Surtidor {
 
+    private static CifradoDescifrado CifDes;
     /**
      * Metodo main encargado de inicializar el Surtidor, y mantener corriendo este mismo.
      * @param args. No son necesarios.
      * @throws IOException
      */
     public static void main(String[] args) throws IOException{
+        CifDes = new CifradoDescifrado();
         try {
             int puertoSocket = Integer.parseInt(conectarAEmpresa());
             String tipo = inicio();
@@ -37,8 +39,14 @@ public class Surtidor {
                     Scanner scanner = new Scanner(System.in);
                     System.out.println("Cantidad: ");
                     String cantidad = scanner.nextLine();
-                    dataoutput.writeUTF(tipo + "-" + cantidad);
+                    System.out.println("1 "+tipo + "-" + cantidad);
+                    String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
+                    System.out.println("TipCant: "+tipCant);
+                    dataoutput.writeUTF(tipCant);
                     String resultado = datainput.readUTF();
+                    System.out.println("r Cif: "+resultado);
+                    resultado = CifDes.descifrarInformacion(resultado);
+                    System.out.println("r Des: "+resultado);
                     try{
                         int valorResultado = Integer.valueOf(resultado);
                         if(valorResultado < 0){

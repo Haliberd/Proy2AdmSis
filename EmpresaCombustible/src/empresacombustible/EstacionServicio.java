@@ -271,9 +271,15 @@ public class EstacionServicio
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 while (bandera.compareTo("0") != 0) {
                     bandera = in.readUTF();
+                    System.out.println("B Cif: "+bandera);
+                    bandera = CifDes.descifrarInformacion(bandera);
+                    System.out.println("B Des: "+bandera);
                     String[] argumentos = bandera.split("-");
                     if(argumentos.length == 2){
                         String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
+                        System.out.println("R Des: "+resultado);
+                        resultado = CifDes.cifrarInformacion(resultado);
+                        System.out.println("R Cif: "+resultado);
                         out.writeUTF(resultado);
                     }
                     else{//Para finalizar la conexion
@@ -307,6 +313,7 @@ public class EstacionServicio
             Socket socket = null;
             DataInputStream input;
             DataOutputStream output; 
+            
             try { 
                 servidor = new ServerSocket(puertoServidorEmpresa);
                 //System.out.println("¡Servidor Estación de Servicio "+nombre+" INICIADO!");
