@@ -265,6 +265,7 @@ public class EstacionServicio
         {
             //System.out.println("Connected: " + socket);
             String bandera = "9";
+            String tipo = "";
             try {
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -274,6 +275,7 @@ public class EstacionServicio
                     if(argumentos.length == 2){
                         String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
                         out.writeUTF(resultado);
+                        tipo = argumentos[0];
                     }
                     /*Funcion encargada de leer si es que existen solicitudes en un surtidor
                     * las cuales fueron ingresadas de modo offline.
@@ -287,9 +289,16 @@ public class EstacionServicio
                             String[] argRecolector = recolector.split("-");
                             if(argRecolector.length == 2)
                                 consultaCargaCombustible(argRecolector[0], argRecolector[1]);
+                            tipo = argRecolector[0];
                         }
                     }
+                    else if(argumentos.length == 1 && (argumentos[0].equals("93") || argumentos[0].equals("95") || argumentos[0].equals("97") || 
+                            argumentos[0].equals("Diesel") || argumentos[0].equals("Kerosene"))){
+                        tipo = argumentos[0];
+                    }
                     else{//Para finalizar la conexion
+                        String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
+                        out.writeUTF(cFinal);
                         System.out.println("Closed: " + socket);
                         socket.close();
                     }
@@ -418,6 +427,23 @@ public class EstacionServicio
                 Logger.getLogger(EstacionServicio.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private int consultaCantidadDeCombustibleFinal(String tipo){
+        String consultaSQL = "SELECT litrosdisponibles  FROM surtidor"
+                + " WHERE tipo = '"+tipo+"'";
+        ResultSet informacion = conexion.consultaBusqueda(consultaSQL);
+        try {
+            while(informacion.next()){
+                
+                return informacion.getInt("litrosdisponibles");
+                
+                //System.out.println("FactorUtilidad: "+factorUtilidad);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
     
     /**

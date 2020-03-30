@@ -62,33 +62,61 @@ public class Surtidor {
     
     private static void programaDesconectado(String tipo, String nombreEmpresa) throws FileNotFoundException, IOException{
         ArrayList<String> comandosIngresados = new ArrayList<>();
+        int cantidadDeCombustibleConocida = ultimaCantidadDeCombustibleRecibida(tipo, nombreEmpresa);
         String bandera = "9";
+        
         while (bandera.compareTo("0") != 0){
             bandera = menu();
             if(bandera.compareTo("1") == 0){
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Cantidad: ");
-                String cantidad = scanner.nextLine();
-                comandosIngresados.add(tipo + "-" + cantidad);
-                /*String resultado = datainput.readUTF();
-                try{
-                    int valorResultado = Integer.valueOf(resultado);
-                    if(valorResultado < 0){
+                //Metodo para validar si es que la cantidad ingresada es mayor a 0. Para evitar realizar cargas negativas.
+                String cantidad = cantidadDeCombustibleACargar(scanner);
+                /*
+                *Metodo para determinar si es que existe combustible disponible.
+                *Solo se almacenan las consultas que son posibles de realizar, es decir, las consultas realizadas con
+                *cantidadDeCombustibleConocida>=0.
+                */
+                if(cantidadDeCombustibleConocida > 0){
+                    if((cantidadDeCombustibleConocida - Integer.parseInt(cantidad)) < 0){
                         System.out.println("No habia suficiente combustible para cargar.\n"
-                                + "Solo se cargaron " + (valorResultado*-1) + " litros.");
-                    }
-                    else if (valorResultado > 0){
-                        System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                                + "Solo se cargaron " + (cantidadDeCombustibleConocida) + " litros.");
+                        comandosIngresados.add(tipo + "-" + cantidadDeCombustibleConocida);
+                        cantidadDeCombustibleConocida = 0;
                     }
                     else{
-                        System.out.println("No habia combustible para cargar.");
+                        System.out.println("Carga exitosa. Se cargaron " + cantidad + " litros.");
+                        cantidadDeCombustibleConocida = (cantidadDeCombustibleConocida - Integer.parseInt(cantidad));
+                        comandosIngresados.add(tipo + "-" + cantidad);
                     }
-                }catch(Exception e){
-                    System.out.println(e);
-                }*/
+                    
+                }
+                else{
+                    System.out.println("No habia combustible para cargar.");
+                }
+                
             }
         }
+        //Ingresa los cambios realizados de forma offline.
         imprimirComandosIngresados(comandosIngresados, tipo, nombreEmpresa);
+        ultimaCantidadDeCombustibleConocida(Integer.toString(cantidadDeCombustibleConocida), tipo, nombreEmpresa);
+    }
+    
+    //Metodo para validar de forma offline las cantidad de combustible a cargar ingresadas.
+    private static String cantidadDeCombustibleACargar(Scanner scanner){
+        String cantidad = "0";
+        while(Integer.parseInt(cantidad) <= 0){
+            try{
+                cantidad = scanner.nextLine();
+                if(Integer.parseInt(cantidad) <= 0)
+                    System.out.println("Por favor, ingrese una cantidad de combustible mayor a 0.\nCantidad: ");
+            }
+            catch(Exception e){
+                System.out.println("Por favor, ingrese un caracter valido.\nCantidad: ");
+                cantidad = "0";
+            }
+        }
+        return cantidad;
     }
     
     
@@ -127,9 +155,15 @@ public class Surtidor {
     }
     
     private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo, String nombreEmpresa) throws IOException{
+        
         String bandera = "9";
         leerComandosAlmacenados(tipo, nombreEmpresa, dataoutput);
+
         while (bandera.compareTo("0") != 0){
+            
+            //Envia el tipo de combustible a cargar.
+            dataoutput.writeUTF(tipo);
+            
             bandera = menu();
             if(bandera.compareTo("1") == 0){
                 Scanner scanner = new Scanner(System.in);
@@ -155,6 +189,39 @@ public class Surtidor {
             }
         }
         dataoutput.writeUTF("0");
+        ultimaCantidadDeCombustibleConocida(datainput.readUTF(), tipo, nombreEmpresa);
+    }
+    
+    private static int ultimaCantidadDeCombustibleRecibida(String tipo, String nombreEmpresa) throws IOException{
+        File UIFile = new File(tipo + "-" + nombreEmpresa + "-cantidadCombustible.txt");
+        if (UIFile.exists()) {
+            BufferedReader inputStream = new BufferedReader(new FileReader(UIFile.getAbsoluteFile()));
+            String count;
+            while ((count = inputStream.readLine()) != null) {
+                inputStream.close();
+                UIFile.getAbsoluteFile().delete();
+                return Integer.parseInt(count);
+            }
+            inputStream.close();
+            UIFile.getAbsoluteFile().delete();
+        }
+        else{
+            
+        }
+        return 0;
+    }
+    
+    private static void ultimaCantidadDeCombustibleConocida(String cantidad, String tipo, String nombreEmpresa) throws IOException{
+        File UIFile = new File(tipo + "-" + nombreEmpresa + "-cantidadCombustible.txt");
+        if (!UIFile.exists()) {
+            UIFile.createNewFile();
+        }
+        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile(), true);
+        BufferedWriter oS = new BufferedWriter(filewriter);
+        PrintWriter outputStream = new PrintWriter(oS);
+        outputStream.print(cantidad + "\n");
+        outputStream.flush();
+        outputStream.close();
     }
     
 
