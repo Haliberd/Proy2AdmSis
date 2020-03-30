@@ -103,13 +103,13 @@ public class EmpresaCombustible {
                                             {
                                                 System.out.println("Ingrese el nuevo precio: ");
                                                 nuevoPrecio = s.nextInt();
+                                                switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
                                             }
                                         } catch (InputMismatchException e) {
                                             System.out.println("Opción ingresada no válida.");
                                             s = new Scanner(System.in);
                                         }
-                                        
-                                        switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
+                                        //switchCaseCombustible(nuevoPrecio,opcionUnoStgo, 55500, "Santiago");
                                     } break;
                                 }
                                 case 2:
@@ -161,13 +161,14 @@ public class EmpresaCombustible {
                                             {
                                                 System.out.println("Ingrese el nuevo precio: ");
                                                 nuevoPrecio = s.nextInt();
+                                                switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
                                             }
                                         } catch (InputMismatchException e) {
                                             System.out.println("Opción ingresada no válida.");
                                             s = new Scanner(System.in);
                                         }
                                         
-                                        switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
+                                        //switchCaseCombustible(nuevoPrecio,opcionUnoCco, 45500, "Curicó");
                                     } break;
                                 }
                                 case 2:
@@ -219,13 +220,14 @@ public class EmpresaCombustible {
                                             {
                                                 System.out.println("Ingrese el nuevo precio: ");
                                                 nuevoPrecio = s.nextInt();
+                                                switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
                                             }
                                         } catch (InputMismatchException e) {
                                             System.out.println("Opción ingresada no válida.");
                                             s = new Scanner(System.in);
                                         }
 
-                                        switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
+                                        //switchCaseCombustible(nuevoPrecio,opcionUnoTalca, 35500, "Talca");
                                     } break;
                                 }
                                 case 2:
