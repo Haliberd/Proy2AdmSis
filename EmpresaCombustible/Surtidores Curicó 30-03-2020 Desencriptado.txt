@@ -1,0 +1,6 @@
+|EstaciónNº  |Precio  |Litros Consumidos  |Litros Disponibles |NºCargas  |Tipo
+|Curico01  |505     |0.0                |5000.0             |0         |93
+|Curico02  |606     |0.0                |5000.0             |0         |95
+|Curico03  |707     |0.0                |5000.0             |0         |97
+|Curico04  |555     |0.0                |5000.0             |0         |Diesel
+|Curico05  |400     |0.0                |5000.0             |0         |Kerosene
