@@ -5,10 +5,17 @@
  */
 package empresacombustible;
 
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -24,42 +31,109 @@ public class Surtidor {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException{
+        String tipo = inicio();
+        String empresa = conectarAEmpresa();
         try {
-            int puertoSocket = Integer.parseInt(conectarAEmpresa());
-            String tipo = inicio();
+            int puertoSocket = Integer.parseInt(empresa);
             Socket socket = new Socket("localhost", puertoSocket);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
-            String bandera = "9";
-            while (bandera.compareTo("0") != 0){
-                bandera = menu();
-                if(bandera.compareTo("1") == 0){
-                    Scanner scanner = new Scanner(System.in);
-                    System.out.println("Cantidad: ");
-                    String cantidad = scanner.nextLine();
-                    dataoutput.writeUTF(tipo + "-" + cantidad);
-                    String resultado = datainput.readUTF();
-                    try{
-                        int valorResultado = Integer.valueOf(resultado);
-                        if(valorResultado < 0){
-                            System.out.println("No habia suficiente combustible para cargar.\n"
-                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
-                        }
-                        else if (valorResultado > 0){
-                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
-                        }
-                        else{
-                            System.out.println("No habia combustible para cargar.");
-                        }
-                    }catch(Exception e){
-                        
+            programaConectado(datainput, dataoutput, tipo);
+        }catch(Exception e){
+            System.out.println("El surtidor esta funcionando en modo offline.");    
+            programaDesconectado(tipo, nombreEmpresa(empresa));
+        }
+    }
+    
+    //Metodo para obtener el nombre de la empresa a partir del puerto a utilizar.
+    private static String nombreEmpresa(String empresa){
+        switch(empresa){
+            case "59898":
+                return "Santiago";
+            case "49898":
+                return "Curico";
+            case "39898":
+                return "Talca";
+        }
+        return "";
+    }
+    
+    private static void programaDesconectado(String tipo, String nombreEmpresa) throws FileNotFoundException, IOException{
+        ArrayList<String> comandosIngresados = new ArrayList<>();
+        String bandera = "9";
+        while (bandera.compareTo("0") != 0){
+            bandera = menu();
+            if(bandera.compareTo("1") == 0){
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("Cantidad: ");
+                String cantidad = scanner.nextLine();
+                comandosIngresados.add(nombreEmpresa + "-" + tipo + "-" + cantidad);
+                /*String resultado = datainput.readUTF();
+                try{
+                    int valorResultado = Integer.valueOf(resultado);
+                    if(valorResultado < 0){
+                        System.out.println("No habia suficiente combustible para cargar.\n"
+                                + "Solo se cargaron " + (valorResultado*-1) + " litros.");
                     }
+                    else if (valorResultado > 0){
+                        System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                    }
+                    else{
+                        System.out.println("No habia combustible para cargar.");
+                    }
+                }catch(Exception e){
+                    System.out.println(e);
+                }*/
+            }
+        }
+        imprimirComandosIngresados(comandosIngresados, tipo, nombreEmpresa);
+    }
+    
+    
+    //Metodo que escribe dentro de un archivo las peticiones realizadas de forma correcta dentro del surtidor en modo offline
+    private static void imprimirComandosIngresados(ArrayList<String> comandosIngresados, String tipo, String nombreEmpresa) throws IOException{
+        File UIFile = new File(tipo + "-" + nombreEmpresa +".txt");
+        if (!UIFile.exists()) {
+            UIFile.createNewFile();
+        }
+        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile(), true);
+        BufferedWriter oS = new BufferedWriter(filewriter);
+        PrintWriter outputStream = new PrintWriter(oS);
+        for(String cadena : comandosIngresados){
+            outputStream.print(cadena + "\n");
+        }
+        outputStream.flush();
+        outputStream.close();
+    }
+    
+    private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo) throws IOException{
+        String bandera = "9";
+        while (bandera.compareTo("0") != 0){
+            bandera = menu();
+            if(bandera.compareTo("1") == 0){
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("Cantidad: ");
+                String cantidad = scanner.nextLine();
+                dataoutput.writeUTF(tipo + "-" + cantidad);
+                String resultado = datainput.readUTF();
+                try{
+                    int valorResultado = Integer.valueOf(resultado);
+                    if(valorResultado < 0){
+                        System.out.println("No habia suficiente combustible para cargar.\n"
+                                + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                    }
+                    else if (valorResultado > 0){
+                        System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                    }
+                    else{
+                        System.out.println("No habia combustible para cargar.");
+                    }
+                }catch(Exception e){
+                    System.out.println(e);
                 }
             }
-            dataoutput.writeUTF("0");
-        }catch(Exception e){
-                
         }
+        dataoutput.writeUTF("0");
     }
     
 
