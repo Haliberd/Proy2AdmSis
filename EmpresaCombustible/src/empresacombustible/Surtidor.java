@@ -5,6 +5,7 @@
  */
 package empresacombustible;
 
+import static empresacombustible.EmpresaCombustible.switchCaseCombustible;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -17,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.InputMismatchException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -27,12 +29,14 @@ import java.util.Scanner;
 
 public class Surtidor {
 
+    private static CifradoDescifrado CifDes;
     /**
      * Metodo main encargado de inicializar el Surtidor, y mantener corriendo este mismo.
      * @param args. No son necesarios.
      * @throws IOException
      */
     public static void main(String[] args) throws IOException{
+        CifDes = new CifradoDescifrado();
         String tipo = inicio();
         String empresa = conectarAEmpresa();
         try {
@@ -40,6 +44,68 @@ public class Surtidor {
             Socket socket = new Socket("localhost", puertoSocket);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
+            String bandera = "9";
+            while (bandera.compareTo("0") != 0){
+                bandera = menu();
+                if(bandera.compareTo("1") == 0){
+                    Scanner scanner = new Scanner(System.in);
+                    int cantidad = 0;                    
+                    try {
+                        System.out.println("Cantidad: ");
+                        cantidad = scanner.nextInt();
+
+                        //System.out.println("1 "+tipo + "-" + cantidad);
+                        String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
+                        System.out.println("TipCant: "+tipCant);
+                        dataoutput.writeUTF(tipCant);
+                        String resultado = datainput.readUTF();
+                        System.out.println("r Cif: "+resultado);
+                        resultado = CifDes.descifrarInformacion(resultado);
+                        System.out.println("r Des: "+resultado);
+                        
+                        int valorResultado = Integer.valueOf(resultado);
+                        if(valorResultado < 0){
+                            System.out.println("No habia suficiente combustible para cargar.\n"
+                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                        }
+                        else if (valorResultado > 0){
+                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                        }
+                        else{
+                            System.out.println("No habia combustible para cargar.");
+                        }
+                        
+                    } catch (InputMismatchException e) {
+                        System.out.println("Cantidad ingresada no válida.");
+                        scanner = new Scanner(System.in);
+                    }
+                    
+                    /*
+                    System.out.println("1 "+tipo + "-" + cantidad);
+                    String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
+                    System.out.println("TipCant: "+tipCant);
+                    dataoutput.writeUTF(tipCant);
+                    String resultado = datainput.readUTF();
+                    System.out.println("r Cif: "+resultado);
+                    resultado = CifDes.descifrarInformacion(resultado);
+                    System.out.println("r Des: "+resultado);*/
+                    
+                    /*
+                    try{
+                        int valorResultado = Integer.valueOf(resultado);
+                        if(valorResultado < 0){
+                            System.out.println("No habia suficiente combustible para cargar.\n"
+                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                        }
+                        else if (valorResultado > 0){
+                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                        }
+                        else{
+                            System.out.println("No habia combustible para cargar.");
+                        }
+                    }catch(Exception e){
+                        
+                    }*/
             programaConectado(datainput, dataoutput, tipo, nombreEmpresa(empresa));
         }catch(Exception e){
             System.out.println("El surtidor esta funcionando en modo offline.");    

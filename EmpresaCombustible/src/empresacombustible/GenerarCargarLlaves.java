@@ -5,12 +5,16 @@
  */
 package empresacombustible;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -21,14 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class GenerarCargarLlaves 
 {
     KeyPair keyPair;
-    
-    public GenerarCargarLlaves() throws NoSuchAlgorithmException, IOException
-    {
-        //generadorLlavePublicaPrivada("Empresa");
-        //generadorLlavePublicaPrivada("Distribuidora");
-    }
-    
-    /*
+
     public SecretKey generarLlaveSecreta()
     {
         try {
@@ -40,17 +37,12 @@ public class GenerarCargarLlaves
             FileOutputStream outPub = new FileOutputStream(outFilePub + ".key");
             outPub.write(skey.getEncoded());
             outPub.close();
-            
             return skey;
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (NoSuchAlgorithmException | IOException ex) {
             Logger.getLogger(GenerarCargarLlaves.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-    }*/
+    }
     
     public SecretKey cargaLlaveSecreta() throws IOException, NoSuchAlgorithmException
     {
@@ -61,8 +53,14 @@ public class GenerarCargarLlaves
         return skey;
     }
     
-     
-    /*
+    /* Métodos para generar y cargar llaves para cifrar y descifrar con RSA.
+    
+    public GenerarCargarLlaves() throws NoSuchAlgorithmException, IOException
+    {
+        generadorLlavePublicaPrivada("Empresa");
+        generadorLlavePublicaPrivada("Distribuidora");
+    }
+    
     public void generadorLlavePublicaPrivada(String nombreLlave) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException
     {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -89,8 +87,7 @@ public class GenerarCargarLlaves
         
         System.err.println("Private key format: " + pvt.getFormat());
     }
-    
-    
+
     public PublicKey cargaLlavePublica(String nombreLlave) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException
     {
         Path path = Paths.get("llavePublica"+nombreLlave+".key");
@@ -101,7 +98,6 @@ public class GenerarCargarLlaves
         PublicKey pubKey = kf.generatePublic(ks);
         return pubKey;
     }
-        
 
     public PrivateKey cargaLlavePrivada(String nombreLlave) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException
     {
