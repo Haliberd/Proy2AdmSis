@@ -305,6 +305,14 @@ public class EstacionServicio
                     else if(argumentos.length == 1 && (argumentos[0].equals("93") || argumentos[0].equals("95") || argumentos[0].equals("97") || 
                             argumentos[0].equals("Diesel") || argumentos[0].equals("Kerosene"))){
                         tipo = argumentos[0];
+                        String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
+                        cFinal = CifDes.cifrarInformacion(cFinal);
+                        out.writeUTF(cFinal);
+                        
+                    }
+                    else if(argumentos.length == 1 && argumentos[0].equals("ASD")){
+                        //Detecta un Surtidor que intenta volver a conectarse.
+                        //No realiza nada más.
                     }
                     else{//Para finalizar la conexion
                         String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
