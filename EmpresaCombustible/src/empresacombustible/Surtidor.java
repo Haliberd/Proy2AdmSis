@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.security.InvalidAlgorithmParameterException;
 import java.util.InputMismatchException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -35,7 +36,7 @@ public class Surtidor {
      * @param args. No son necesarios.
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, FileNotFoundException, InvalidAlgorithmParameterException{
         CifDes = new CifradoDescifrado();
         String tipo = inicio();
         String empresa = conectarAEmpresa();
@@ -44,68 +45,7 @@ public class Surtidor {
             Socket socket = new Socket("localhost", puertoSocket);
             DataInputStream datainput = new DataInputStream(socket.getInputStream());
             DataOutputStream dataoutput = new DataOutputStream(socket.getOutputStream());
-            String bandera = "9";
-            while (bandera.compareTo("0") != 0){
-                bandera = menu();
-                if(bandera.compareTo("1") == 0){
-                    Scanner scanner = new Scanner(System.in);
-                    int cantidad = 0;                    
-                    try {
-                        System.out.println("Cantidad: ");
-                        cantidad = scanner.nextInt();
-
-                        //System.out.println("1 "+tipo + "-" + cantidad);
-                        String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
-                        System.out.println("TipCant: "+tipCant);
-                        dataoutput.writeUTF(tipCant);
-                        String resultado = datainput.readUTF();
-                        System.out.println("r Cif: "+resultado);
-                        resultado = CifDes.descifrarInformacion(resultado);
-                        System.out.println("r Des: "+resultado);
-                        
-                        int valorResultado = Integer.valueOf(resultado);
-                        if(valorResultado < 0){
-                            System.out.println("No habia suficiente combustible para cargar.\n"
-                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
-                        }
-                        else if (valorResultado > 0){
-                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
-                        }
-                        else{
-                            System.out.println("No habia combustible para cargar.");
-                        }
-                        
-                    } catch (InputMismatchException e) {
-                        System.out.println("Cantidad ingresada no válida.");
-                        scanner = new Scanner(System.in);
-                    }
-                    
-                    /*
-                    System.out.println("1 "+tipo + "-" + cantidad);
-                    String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
-                    System.out.println("TipCant: "+tipCant);
-                    dataoutput.writeUTF(tipCant);
-                    String resultado = datainput.readUTF();
-                    System.out.println("r Cif: "+resultado);
-                    resultado = CifDes.descifrarInformacion(resultado);
-                    System.out.println("r Des: "+resultado);*/
-                    
-                    /*
-                    try{
-                        int valorResultado = Integer.valueOf(resultado);
-                        if(valorResultado < 0){
-                            System.out.println("No habia suficiente combustible para cargar.\n"
-                                    + "Solo se cargaron " + (valorResultado*-1) + " litros.");
-                        }
-                        else if (valorResultado > 0){
-                            System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
-                        }
-                        else{
-                            System.out.println("No habia combustible para cargar.");
-                        }
-                    }catch(Exception e){
-                        
-                    }*/
+            
             programaConectado(datainput, dataoutput, tipo, nombreEmpresa(empresa));
         }catch(Exception e){
             System.out.println("El surtidor esta funcionando en modo offline.");    
@@ -126,7 +66,7 @@ public class Surtidor {
         return "";
     }
     
-    private static void programaDesconectado(String tipo, String nombreEmpresa) throws FileNotFoundException, IOException{
+    private static void programaDesconectado(String tipo, String nombreEmpresa) throws FileNotFoundException, IOException, InvalidAlgorithmParameterException{
         ArrayList<String> comandosIngresados = new ArrayList<>();
         int cantidadDeCombustibleConocida = ultimaCantidadDeCombustibleRecibida(tipo, nombreEmpresa);
         String bandera = "9";
@@ -165,7 +105,7 @@ public class Surtidor {
         }
         //Ingresa los cambios realizados de forma offline.
         imprimirComandosIngresados(comandosIngresados, tipo, nombreEmpresa);
-        ultimaCantidadDeCombustibleConocida(Integer.toString(cantidadDeCombustibleConocida), tipo, nombreEmpresa);
+        ultimaCantidadDeCombustibleConocida(CifDes.cifrarInformacion(Integer.toString(cantidadDeCombustibleConocida)), tipo, nombreEmpresa);
     }
     
     //Metodo para validar de forma offline las cantidad de combustible a cargar ingresadas.
@@ -185,7 +125,6 @@ public class Surtidor {
         return cantidad;
     }
     
-    
     //Metodo que escribe dentro de un archivo las peticiones realizadas de forma correcta dentro del surtidor en modo offline
     private static void imprimirComandosIngresados(ArrayList<String> comandosIngresados, String tipo, String nombreEmpresa) throws IOException{
         File UIFile = new File(tipo + "-" + nombreEmpresa +".txt");
@@ -196,14 +135,14 @@ public class Surtidor {
         BufferedWriter oS = new BufferedWriter(filewriter);
         PrintWriter outputStream = new PrintWriter(oS);
         for(String cadena : comandosIngresados){
-            outputStream.print(cadena + "\n");
+            outputStream.print(CifDes.cifrarInformacion(cadena) + "\n");
         }
         outputStream.flush();
         outputStream.close();
     }
     
     private static void leerComandosAlmacenados(String tipo, String nombreEmpresa, DataOutputStream dataoutput) throws FileNotFoundException, IOException{
-        dataoutput.writeUTF("1");
+        dataoutput.writeUTF(CifDes.cifrarInformacion("1"));
         File UIFile = new File(tipo + "-" + nombreEmpresa +".txt");
         if (UIFile.exists()) {
             BufferedReader inputStream = new BufferedReader(new FileReader(UIFile.getAbsoluteFile()));
@@ -211,32 +150,70 @@ public class Surtidor {
             while ((count = inputStream.readLine()) != null) {
                 dataoutput.writeUTF(count);
             }
-            dataoutput.writeUTF("0");
+            dataoutput.writeUTF(CifDes.cifrarInformacion("0"));
             inputStream.close();
             UIFile.getAbsoluteFile().delete();
         }
         else{
-            dataoutput.writeUTF("0");
+            dataoutput.writeUTF(CifDes.cifrarInformacion("0"));
         }
-    }
+    }      
     
-    private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo, String nombreEmpresa) throws IOException{
+    private static void programaConectado(DataInputStream datainput, DataOutputStream dataoutput, String tipo, String nombreEmpresa) throws IOException, InvalidAlgorithmParameterException{
         
+
         String bandera = "9";
         leerComandosAlmacenados(tipo, nombreEmpresa, dataoutput);
-
+        
+        //Envia el tipo de combustible a cargar.
+        dataoutput.writeUTF(CifDes.cifrarInformacion(tipo));
+        
         while (bandera.compareTo("0") != 0){
-            
-            //Envia el tipo de combustible a cargar.
-            dataoutput.writeUTF(tipo);
-            
             bandera = menu();
             if(bandera.compareTo("1") == 0){
                 Scanner scanner = new Scanner(System.in);
-                System.out.println("Cantidad: ");
-                String cantidad = scanner.nextLine();
-                dataoutput.writeUTF(tipo + "-" + cantidad);
+                int cantidad = 0;                    
+                try {
+                    System.out.println("Cantidad: ");
+                    cantidad = scanner.nextInt();
+
+                    //System.out.println("1 "+tipo + "-" + cantidad);
+                    String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
+                    System.out.println("TipCant: "+tipCant);
+                    dataoutput.writeUTF(tipCant);
+                    String resultado = datainput.readUTF();
+                    System.out.println("r Cif: "+resultado);
+                    resultado = CifDes.descifrarInformacion(resultado);
+                    System.out.println("r Des: "+resultado);
+
+                    int valorResultado = Integer.valueOf(resultado);
+                    if(valorResultado < 0){
+                        System.out.println("No habia suficiente combustible para cargar.\n"
+                                + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                    }
+                    else if (valorResultado > 0){
+                        System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                    }
+                    else{
+                        System.out.println("No habia combustible para cargar.");
+                    }
+
+                } catch (InputMismatchException e) {
+                    System.out.println("Cantidad ingresada no válida.");
+                    scanner = new Scanner(System.in);
+                }
+
+                /*
+                System.out.println("1 "+tipo + "-" + cantidad);
+                String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
+                System.out.println("TipCant: "+tipCant);
+                dataoutput.writeUTF(tipCant);
                 String resultado = datainput.readUTF();
+                System.out.println("r Cif: "+resultado);
+                resultado = CifDes.descifrarInformacion(resultado);
+                System.out.println("r Des: "+resultado);*/
+
+                /*
                 try{
                     int valorResultado = Integer.valueOf(resultado);
                     if(valorResultado < 0){
@@ -250,15 +227,16 @@ public class Surtidor {
                         System.out.println("No habia combustible para cargar.");
                     }
                 }catch(Exception e){
-                    System.out.println(e);
-                }
+
+                }*/
             }
-        }
-        dataoutput.writeUTF("0");
+        }            
+            
+        dataoutput.writeUTF(CifDes.cifrarInformacion("0"));
         ultimaCantidadDeCombustibleConocida(datainput.readUTF(), tipo, nombreEmpresa);
     }
     
-    private static int ultimaCantidadDeCombustibleRecibida(String tipo, String nombreEmpresa) throws IOException{
+    private static int ultimaCantidadDeCombustibleRecibida(String tipo, String nombreEmpresa) throws IOException, InvalidAlgorithmParameterException{
         File UIFile = new File(tipo + "-" + nombreEmpresa + "-cantidadCombustible.txt");
         if (UIFile.exists()) {
             BufferedReader inputStream = new BufferedReader(new FileReader(UIFile.getAbsoluteFile()));
@@ -266,7 +244,7 @@ public class Surtidor {
             while ((count = inputStream.readLine()) != null) {
                 inputStream.close();
                 UIFile.getAbsoluteFile().delete();
-                return Integer.parseInt(count);
+                return Integer.parseInt(CifDes.descifrarInformacion(count));
             }
             inputStream.close();
             UIFile.getAbsoluteFile().delete();

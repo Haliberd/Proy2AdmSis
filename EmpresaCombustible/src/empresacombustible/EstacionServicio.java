@@ -293,6 +293,9 @@ public class EstacionServicio
                         String recolector = "1";
                         while (!recolector.equals("0")){
                             recolector = in.readUTF();
+                            System.out.println("B Cifa: "+ recolector);
+                            recolector = CifDes.descifrarInformacion(recolector);
+                            System.out.println("B Desa: "+ recolector);
                             String[] argRecolector = recolector.split("-");
                             if(argRecolector.length == 2)
                                 consultaCargaCombustible(argRecolector[0], argRecolector[1]);
@@ -305,6 +308,7 @@ public class EstacionServicio
                     }
                     else{//Para finalizar la conexion
                         String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
+                        cFinal = CifDes.cifrarInformacion(cFinal);
                         out.writeUTF(cFinal);
                         System.out.println("Closed: " + socket);
                         socket.close();
