@@ -39,7 +39,9 @@ public class Surtidor {
                 bandera = menu();
                 if(bandera.compareTo("1") == 0){
                     Scanner scanner = new Scanner(System.in);
-                    int cantidad = 0;                    
+                    int cantidad = 0; 
+                    /*Lo puse todo dentro del try catch para que cuando se ingresara
+                    un valor no válido, no quedara esperando el resultado*/
                     try {
                         System.out.println("Cantidad: ");
                         cantidad = scanner.nextInt();
