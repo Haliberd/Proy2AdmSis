@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -53,10 +55,31 @@ public class Surtidor {
             //Llama al metodo online de Surtidor.
             programaConectado(datainput, dataoutput, tipo, nombreEmpresa(empresa));
         }catch(Exception e){
+            //Emite el reporte del error que ha ocurrido y que ha sacado al Surtidor de funcionamiento.
+            reportarError(tipo, nombreEmpresa(empresa), e);
             System.out.println("El surtidor esta funcionando en modo offline.");    
             //Llama al metodo offline de Surtidor.
             programaDesconectado(tipo, nombreEmpresa(empresa));
         }
+    }
+    
+    //Escribe el reporte de errores - dicho reporte esta escrito sin codificar, para facilitar la revision
+    private static void reportarError(String tipo, String nombreEmpresa, Exception e) throws IOException, IOException{
+        File UIFile = new File(tipo + "-" + nombreEmpresa +"-ReporteError.txt");
+        if (!UIFile.exists()) {
+            UIFile.createNewFile();
+        }
+        FileWriter filewriter = new FileWriter(UIFile.getAbsoluteFile(), true);
+        BufferedWriter oS = new BufferedWriter(filewriter);
+        PrintWriter outputStream = new PrintWriter(oS);
+        
+        //Funciones encargadas de determinar la fecha actual.
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+        LocalDateTime horaActual = LocalDateTime.now(); 
+        
+        outputStream.println(formato.format(horaActual) + " " + tipo + "-" + nombreEmpresa + "-" + e.getMessage());
+        outputStream.flush();
+        outputStream.close();
     }
     
     /*Funcion diseñada para comprobar si es que la estacion de servicio correspondiente a nombreEmpresa.
@@ -163,7 +186,9 @@ public class Surtidor {
                 }
                 
             }
-            verConexion = probarConexion(tipo, nombreEmpresa);
+            //Necesario para que el Surtidor no intente volver a conectarse si es que la opcion elegida es cerrar el surtidor.
+            if(!bandera.equals("0"))
+                verConexion = probarConexion(tipo, nombreEmpresa);
         }
         //Ingresa los cambios realizados de forma offline.
         imprimirComandosIngresados(comandosIngresados, tipo, nombreEmpresa);
