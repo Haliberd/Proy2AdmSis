@@ -310,6 +310,10 @@ public class EstacionServicio
                         out.writeUTF(cFinal);
                         
                     }
+                    else if(argumentos.length == 1 && argumentos[0].equals("ASD")){
+                        //Detecta un Surtidor que intenta volver a conectarse.
+                        //No realiza nada más.
+                    }
                     else{//Para finalizar la conexion
                         String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
                         cFinal = CifDes.cifrarInformacion(cFinal);
