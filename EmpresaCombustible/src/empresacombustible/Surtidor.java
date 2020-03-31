@@ -31,6 +31,7 @@ import java.util.Scanner;
 public class Surtidor {
 
     private static CifradoDescifrado CifDes;
+    private static int cantidadDeCombustibleConocida = 0;
     /**
      * Metodo main encargado de inicializar el Surtidor, y mantener corriendo este mismo.
      * @param args. No son necesarios.
@@ -68,7 +69,8 @@ public class Surtidor {
     
     private static void programaDesconectado(String tipo, String nombreEmpresa) throws FileNotFoundException, IOException, InvalidAlgorithmParameterException{
         ArrayList<String> comandosIngresados = new ArrayList<>();
-        int cantidadDeCombustibleConocida = ultimaCantidadDeCombustibleRecibida(tipo, nombreEmpresa);
+        if(cantidadDeCombustibleConocida==0)
+            cantidadDeCombustibleConocida = ultimaCantidadDeCombustibleRecibida(tipo, nombreEmpresa);
         String bandera = "9";
         
         while (bandera.compareTo("0") != 0){
@@ -167,6 +169,8 @@ public class Surtidor {
         
         //Envia el tipo de combustible a cargar.
         dataoutput.writeUTF(CifDes.cifrarInformacion(tipo));
+        cantidadDeCombustibleConocida = Integer.parseInt(CifDes.descifrarInformacion(datainput.readUTF()));
+        System.out.println("IniCombustible conocido: " + cantidadDeCombustibleConocida);
         
         while (bandera.compareTo("0") != 0){
             bandera = menu();
@@ -190,9 +194,11 @@ public class Surtidor {
                     if(valorResultado < 0){
                         System.out.println("No habia suficiente combustible para cargar.\n"
                                 + "Solo se cargaron " + (valorResultado*-1) + " litros.");
+                        cantidadDeCombustibleConocida += valorResultado;
                     }
                     else if (valorResultado > 0){
                         System.out.println("Carga exitosa. Se cargaron " + (valorResultado) + " litros.");
+                        cantidadDeCombustibleConocida -= valorResultado;
                     }
                     else{
                         System.out.println("No habia combustible para cargar.");
