@@ -14,7 +14,6 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -272,15 +271,15 @@ public class EstacionServicio
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 while (bandera.compareTo("0") != 0) {
                     bandera = in.readUTF();
-                    System.out.println("B Cif: "+bandera);
+                    System.out.println("Surtidor Cif: "+bandera);
                     bandera = CifDes.descifrarInformacion(bandera);
-                    System.out.println("B Des: "+bandera);
+                    System.out.println("Surtidor Des: "+bandera);
                     String[] argumentos = bandera.split("-");
                     if(argumentos.length == 2){
                         String resultado = Integer.toString(consultaCargaCombustible(argumentos[0], argumentos[1]));
-                        System.out.println("R Des: "+resultado);
+                        System.out.println("Msje Des: "+resultado);
                         resultado = CifDes.cifrarInformacion(resultado);
-                        System.out.println("R Cif: "+resultado);
+                        System.out.println("Msje Cif: "+resultado);
                         out.writeUTF(resultado);
                         tipo = argumentos[0];
                     }
@@ -293,9 +292,9 @@ public class EstacionServicio
                         String recolector = "1";
                         while (!recolector.equals("0")){
                             recolector = in.readUTF();
-                            System.out.println("B Cifa: "+ recolector);
+                            System.out.println("B Cif: "+ recolector);
                             recolector = CifDes.descifrarInformacion(recolector);
-                            System.out.println("B Desa: "+ recolector);
+                            System.out.println("B Des: "+ recolector);
                             String[] argRecolector = recolector.split("-");
                             if(argRecolector.length == 2)
                                 consultaCargaCombustible(argRecolector[0], argRecolector[1]);
@@ -307,6 +306,7 @@ public class EstacionServicio
                         tipo = argumentos[0];
                         String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
                         cFinal = CifDes.cifrarInformacion(cFinal);
+                        System.out.println("Msje Cif: "+cFinal);
                         out.writeUTF(cFinal);
                         
                     }
@@ -318,6 +318,7 @@ public class EstacionServicio
                         String cFinal = Integer.toString(consultaCantidadDeCombustibleFinal(tipo));
                         cFinal = CifDes.cifrarInformacion(cFinal);
                         out.writeUTF(cFinal);
+                        System.out.println("Msje Cif: "+cFinal);
                         System.out.println("Closed: " + socket);
                         socket.close();
                     }
@@ -372,7 +373,7 @@ public class EstacionServicio
 
                     String[] msjeSplit = mensaje.split("-");
                     //System.out.println(Arrays.toString(msjeSplit)); 
-                        
+                    
                     if(verificoConexion == false)
                     {
                         output = new DataOutputStream(socket.getOutputStream());
@@ -391,6 +392,7 @@ public class EstacionServicio
                         }
                         else
                         {
+                            System.out.println("Creo que hay un intruso en la red.");
                             output.writeUTF("Tu no eres la empresa... ¿qué pretendes?");
                         }
                     }

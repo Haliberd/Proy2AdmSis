@@ -5,13 +5,11 @@
  */
 package empresacombustible;
 
-import static empresacombustible.EmpresaCombustible.switchCaseCombustible;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -274,13 +272,14 @@ public class Surtidor {
                     cantidad = scanner.nextInt();
 
                     //System.out.println("1 "+tipo + "-" + cantidad);
+                    System.out.println("Sol: "+tipo + "-" + cantidad);
                     String tipCant = CifDes.cifrarInformacion(tipo + "-" + cantidad);
-                    System.out.println("TipCant: "+tipCant);
+                    System.out.println("Sol cifrada: "+tipCant);
                     dataoutput.writeUTF(tipCant);
                     String resultado = datainput.readUTF();
-                    System.out.println("r Cif: "+resultado);
+                    System.out.println("Msje Cif: "+resultado);
                     resultado = CifDes.descifrarInformacion(resultado);
-                    System.out.println("r Des: "+resultado);
+                    System.out.println("Msje Des: "+resultado);
 
                     int valorResultado = Integer.valueOf(resultado);
                     if(valorResultado < 0){

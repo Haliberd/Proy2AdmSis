@@ -22,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -292,7 +290,7 @@ public class EmpresaCombustible {
                 String msje = input.readUTF();
                 System.out.println("Msje Cifrado: "+msje);
                 msje = CifDes.descifrarInformacion(msje);
-                System.out.println("Cifrando el msje...");
+                System.out.println("Descifrando el msje...");
                 output.writeUTF(msje);
                 System.out.println(input.readUTF());
                 String fin = input.readUTF();
@@ -335,7 +333,7 @@ public class EmpresaCombustible {
                     input = new DataInputStream(socket.getInputStream());
                     String msje = input.readUTF();
 
-                    //System.out.println("msjeEnc: "+msje);
+                    System.out.println("msjeEnc: "+msje);
                     msje = CifDes.descifrarInformacion(msje);
                     System.out.println("msjeDes: "+msje);
 
@@ -343,7 +341,7 @@ public class EmpresaCombustible {
                     while(!mensaje.equals("Fin"))
                     {
                         mensaje = input.readUTF();
-                        //System.out.println("msjEnc: "+mensaje);
+                        System.out.println("msjEnc: "+mensaje);
                         mensaje = CifDes.descifrarInformacion(mensaje);
                         System.out.println("msjeDes: "+mensaje);
                     }

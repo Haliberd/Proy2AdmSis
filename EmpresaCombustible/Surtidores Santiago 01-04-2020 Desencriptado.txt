@@ -1,0 +1,6 @@
+|EstaciónNº  |Precio  |Litros Consumidos  |Litros Disponibles |NºCargas  |Tipo
+|Santiago04  |555     |0.0                |5000.0             |0         |Diesel
+|Santiago05  |404     |0.0                |5000.0             |0         |Kerosene
+|Santiago02  |606     |0.0                |5000.0             |0         |95
+|Santiago03  |707     |0.0                |5000.0             |0         |97
+|Santiago01  |505     |420.0                |4580.0             |10         |93

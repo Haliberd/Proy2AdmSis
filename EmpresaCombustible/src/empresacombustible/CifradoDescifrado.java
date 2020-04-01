@@ -16,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -42,6 +41,8 @@ public class CifradoDescifrado
         } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException ex) {
             Logger.getLogger(CifradoDescifrado.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        /*Lo siguiente se utilizaba para cargar las llaves RSA*/
         /*
         try {
         GCLL = new GenerarCargarLlaves();
@@ -67,6 +68,9 @@ public class CifradoDescifrado
         return llaveSecreta;
     }
     
+    /**
+     * Cifra un texto plano con la llave secreta.
+     */
     public String cifrarInformacion(String texto)
     {
         
@@ -93,6 +97,9 @@ public class CifradoDescifrado
         return "";
     }
     
+    /**
+     * Descifra un texto plano con la llave secreta.
+     */
     public String descifrarInformacion(String texto) throws InvalidAlgorithmParameterException
     {
         /*

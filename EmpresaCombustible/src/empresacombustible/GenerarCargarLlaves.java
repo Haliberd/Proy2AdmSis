@@ -26,6 +26,7 @@ public class GenerarCargarLlaves
 {
     KeyPair keyPair;
 
+    /*Genera una nueva llave secreta*/
     public SecretKey generarLlaveSecreta()
     {
         try {
@@ -44,6 +45,7 @@ public class GenerarCargarLlaves
         return null;
     }
     
+    /*Lee el archivo de la clave secreta ubicado en la ruta del proyecto*/
     public SecretKey cargaLlaveSecreta() throws IOException, NoSuchAlgorithmException
     {
         Path path = Paths.get("llaveSecreta.key");
